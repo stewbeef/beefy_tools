@@ -1502,6 +1502,7 @@ int adv_netgain(item it,int advcost)
 	int price = max(it.mall_price(),it.autosell_price());
 
 	int netgain = it.get_adv() * advcost - price;
+	return netgain;
 }
 
 int adv_from_items(int [item] it_list)
