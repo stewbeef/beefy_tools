@@ -1497,12 +1497,12 @@ float get_adv(item it)
 	}
 }
 
-float netgain_per_adv(item it,int meat_per_adventure)
+int adv_meat_gain(item it,int meat_per_adventure)
 {
-	float price = max(it.mall_price(),it.autosell_price()).to_float();
+	int price = max(it.mall_price(),it.autosell_price());
 
-	float netgain = (it.get_adv()*meat_per_adventure - price).to_float()/it.get_adv().to_float();
-	return netgain;
+	int adv_meat_gain = (it.get_adv()*meat_per_adventure - price);
+	return adv_meat_gain;
 }
 
 int adv_from_items(int [item] it_list)
