@@ -1,6 +1,8 @@
 //General tools for scripting
 
 script "beefy_tools.ash";
+
+import "beefy_records.ash";
 ///////////////////////
 //Records
 record strint
@@ -102,6 +104,13 @@ boolean [slot] norm_slots()
 {
 	return $slots[hat,back,weapon,off-hand,shirt,pants,acc1,acc2,acc3,familiar];
 }
+///////////////////////
+//logging
+int beefy_logging()
+{
+	return get_property("beefy_logging").to_int();
+}
+
 ///////////////////////
 //Date-Time functions
 	///////////////////////
@@ -807,6 +816,26 @@ boolean [string] StringInt2BooleanString(string [int] str_int)
 	return bool_string;
 }
 
+boolean [int] StringInt2BooleanInt(string [int] str_int)
+{
+	boolean [int] bool_int;
+	foreach num in str_int
+	{
+		bool_int[str_int[num].to_int()] = true;
+	}
+	return bool_int;
+}
+
+boolean [int] IntInt2BooleanInt(int [int] int_int)
+{
+	boolean [int] bool_int;
+	foreach num in int_int
+	{
+		bool_int[int_int[num]] = true;
+	}
+	return bool_int;
+}
+
 	///////////////////////
 	//Array Subarray
 string [int] FromXtoY(string[int] my_array, int start, int end)
@@ -1382,52 +1411,56 @@ consumables get_consumables()
 {
 
 	consumables my_consumables;
-	foreach it in get_inventory()
+	foreach it in $items[]
 	{
-		if(it.fullness > 0 && it.inebriety == 0 && it.spleen == 0)
+		int number = available_amount(it) + creatable_amount(it);
+		if(number > 0)
 		{
-			my_consumables.food[it] = get_inventory()[it];
-		}
-		else if(it.fullness == 0 && it.inebriety > 0 && it.spleen == 0)
-		{
-			my_consumables.booze[it] = get_inventory()[it];
-		}
-		else if(it.fullness == 0 && it.inebriety == 0 && it.spleen > 0)
-		{
-			my_consumables.spleen[it] = get_inventory()[it];
-		}
-		else if(it.fullness > 0 || it.inebriety > 0 || it.spleen > 0)
-		{
-			my_consumables.multi[it] = get_inventory()[it];
-		}
-		else if(it.usable)
-		{
-			my_consumables.all_usables[it] = get_inventory()[it];
-			
-			if(is_potion(it))
+			if(it.fullness > 0 && it.inebriety == 0 && it.spleen == 0)
 			{
-				my_consumables.potions[it] = get_inventory()[it];
+				my_consumables.food[it] = number;
 			}
-			
-			if(it.reusable)
+			else if(it.fullness == 0 && it.inebriety > 0 && it.spleen == 0)
 			{
-				my_consumables.reusables[it] = get_inventory()[it];
+				my_consumables.booze[it] = number;
 			}
+			else if(it.fullness == 0 && it.inebriety == 0 && it.spleen > 0)
+			{
+				my_consumables.spleen[it] = number;
+			}
+			else if(it.fullness > 0 || it.inebriety > 0 || it.spleen > 0)
+			{
+				my_consumables.multi[it] = number;
+			}
+			else if(it.usable)
+			{
+				my_consumables.all_usables[it] = number;
+				
+				if(is_potion(it))
+				{
+					my_consumables.potions[it] = number;
+				}
+				
+				if(it.reusable)
+				{
+					my_consumables.reusables[it] = number;
+				}
 
-			if(!it.reusable && !is_potion(it))
-			{
-				my_consumables.other_usables[it] = get_inventory()[it];
+				if(!it.reusable && !is_potion(it))
+				{
+					my_consumables.other_usables[it] = number;
+				}
 			}
+			else if(!it.candy)
+			{
+				my_consumables.other[it] = number;
+			}
+			
+			if(it.candy)
+			{
+				my_consumables.candy[it] = get_inventory()[it];
+			}		
 		}
-		else if(!it.candy)
-		{
-			my_consumables.other[it] = get_inventory()[it];
-		}
-		
-		if(it.candy)
-		{
-			my_consumables.candy[it] = get_inventory()[it];
-		}		
 	}
 	return my_consumables;
 }
@@ -1437,7 +1470,17 @@ int inebriety_left()
 	return inebriety_limit() - my_inebriety();
 }
 
-int get_adv(item it)
+int fullness_left()
+{
+	return fullness_limit() - my_fullness();
+}
+
+int spleen_left()
+{
+	return spleen_limit() - my_spleen_use();
+}
+
+float get_adv(item it)
 {
 	string [int] nums = it.adventures.split_string("-");
 	switch(nums.count())
@@ -1445,9 +1488,9 @@ int get_adv(item it)
 		case 0:
 			return 0;
 		case 1:
-			return it.adventures.to_int();
+			return it.adventures.to_float();
 		case 2:
-			return nums[0].to_int() + (nums[1].to_int() - nums[0].to_int())/2;
+			return nums[0].to_float() + (nums[1].to_float() - nums[0].to_float())/2;
 		default:
 			print_html("Adventure format %s unrecognized for item %s, returning 0",string[int]{it.adventures,it.to_string()});
 			return 0;
@@ -1464,6 +1507,37 @@ int adv_from_items(int [item] it_list)
 	return adv;
 
 }
+
+float adv_per_space(item it)
+{
+	float space = it.fullness + it.inebriety + it.spleen;
+	return it.get_adv() / space;
+}
+
+float meat_per_adv_per_space(item it)
+{
+	float price = max(it.mall_price(),it.autosell_price()).to_float();
+	if(it.adv_per_space() == 0)
+	{
+		return 1000000;
+	}
+	if(price == 0)
+	{
+		price = 1000;	
+	}
+	return price / adv_per_space(it);
+}
+
+boolean is_multiconsume(item it)
+{
+	int composite = it.spleen * it.inebriety + it.fullness * it.spleen + it.inebriety * it.fullness;
+	if (composite > 0)
+	{
+		return true;
+	}
+	return false;
+}
+
 ////////////////////
 //Mail Functions
 record mail
