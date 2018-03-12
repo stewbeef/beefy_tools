@@ -1379,7 +1379,26 @@ void print_html_list(string text, string [int] words, string [int] my_array)
 	append_tail(replacer,output);
 	print_html(output.to_string());
 }
+///////////////////////
+//Inventory
 
+void getbuy(int quantity, item it)
+{
+	inv_amount = have_amount(it);
+	if(inv_amount > quantity)
+	{
+		return;
+	}
+	else(if closet_amount(it) > 0 )
+	{
+		take_closet(min(closet_amount[it],quantity - inv_amount), it);
+	}
+
+	if(have_amount(it) < quantity)
+	{
+		buy(have_amount(it) - quantity);
+	}	
+}
 ///////////////////////
 //Food/Booze related
 
