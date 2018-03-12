@@ -1384,7 +1384,7 @@ void print_html_list(string text, string [int] words, string [int] my_array)
 
 void getbuy(int quantity, item it)
 {
-	int inv_amount = have_amount(it);
+	int inv_amount = item_amount(it);
 	if(inv_amount > quantity)
 	{
 		return;
@@ -1394,9 +1394,9 @@ void getbuy(int quantity, item it)
 		take_closet(min(closet_amount[it],quantity - inv_amount), it);
 	}
 
-	if(have_amount(it) < quantity)
+	if(item_amount(it) < quantity)
 	{
-		buy(have_amount(it) - quantity);
+		buy(item_amount(it) - quantity);
 	}	
 }
 ///////////////////////
