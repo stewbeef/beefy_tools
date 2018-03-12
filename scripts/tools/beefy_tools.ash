@@ -1396,7 +1396,7 @@ void getbuy(int quantity, item it)
 
 	if(item_amount(it) < quantity)
 	{
-		buy(item_amount(it) - quantity, it);
+		buy(quantity - item_amount(it) - , it);
 	}	
 }
 ///////////////////////
