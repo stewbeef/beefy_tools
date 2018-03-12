@@ -1384,7 +1384,7 @@ void print_html_list(string text, string [int] words, string [int] my_array)
 
 void getbuy(int quantity, item it)
 {
-	inv_amount = have_amount(it);
+	int inv_amount = have_amount(it);
 	if(inv_amount > quantity)
 	{
 		return;
