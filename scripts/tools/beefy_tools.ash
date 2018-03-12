@@ -1391,7 +1391,7 @@ void getbuy(int quantity, item it)
 	}
 	else if (closet_amount(it) > 0 )
 	{
-		take_closet(min(closet_amount[it],quantity - inv_amount), it);
+		take_closet(min(closet_amount(it),quantity - inv_amount), it);
 	}
 
 	if(item_amount(it) < quantity)
