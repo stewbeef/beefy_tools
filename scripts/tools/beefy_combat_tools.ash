@@ -294,7 +294,7 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 		vars["SAUCE"] = 0.0;
 	}
 	if(!(vars contains "PASTA"))
-	{PASTA
+	{
 		vars["PASTA"] = 0.0;
 	}
 	vars["base"] = (max + min)/2;
