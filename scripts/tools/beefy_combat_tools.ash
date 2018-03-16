@@ -367,7 +367,7 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 			}
 		break;
 		case $element[stench]:
-			vars["bonus_elemental_damage"] = numeric_modifier("stench spell damage");
+			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("stench spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[hot]:
@@ -383,7 +383,7 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 			}
 		break;
 		default:
-			vars["bonus_elemental_damage"] = 1;
+			vars["BONUS_ELEMENTAL_DAMAGE"] = 1;
 			vars["EL_MULT"] = 1;
 		break;
 	}
