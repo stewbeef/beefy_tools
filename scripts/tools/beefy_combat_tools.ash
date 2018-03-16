@@ -186,13 +186,6 @@ import "beefy_tools.ash";
 		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
 		boolean [string] {"pastalord" : true}
 		);
-	cmbt_spells[to_skill("Weapon of the Pastalord")].sk = to_skill("Weapon of the Pastalord");
-	cmbt_spells[to_skill("Weapon of the Pastalord")].min_damage[$element[none]] = 32;
-	cmbt_spells[to_skill("Weapon of the Pastalord")].max_damage[$element[none]] = 64;
-	cmbt_spells[to_skill("Weapon of the Pastalord")].boost[$stat[mysticality]] = 0.5;
-	cmbt_spells[to_skill("Weapon of the Pastalord")].cap = 0;
-	cmbt_spells[to_skill("Weapon of the Pastalord")].props["pastalord"] = true;
-	cmbt_spells[to_skill("Weapon of the Pastalord")].props["pasta"] = true;
 
 	cmbt_spells[to_skill("Fearful Fettucini")] = new combat_spell(
 		to_skill("Fearful Fettucini"),
