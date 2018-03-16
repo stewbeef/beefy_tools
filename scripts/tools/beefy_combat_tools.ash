@@ -255,16 +255,16 @@ float dmg_eval(string expr, float[string] vars)
 			case "CRIT":
 				m.append_replacement(b, (numeric_modifier("Critical Hit Percent")/100).to_string());
 				break;
-			case "SPELL_MULT"
+			case "SPELL_MULT":
 				m.append_replacement(b, (numeric_modifier("spell damage percent")/100).to_string());
 				break;
-			case "WEAPON_MULT"
+			case "WEAPON_MULT":
 				m.append_replacement(b, (numeric_modifier("Weapon Damage Percent")/100).to_string());
 				break;
-			ase "RANGED_MULT"
+			ase "RANGED_MULT":
 				m.append_replacement(b, (numeric_modifier("Ranged Damage Percent")/100).to_string());
 				break;
-			case "SPELL_MULT"
+			case "SPELL_MULT":
 				m.append_replacement(b, (numeric_modifier("spell damage percent")/100).to_string());
 				break;
 			default:
