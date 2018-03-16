@@ -222,16 +222,46 @@ import "beefy_tools.ash";
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 1}
 		boolean [string] {"attack" : true}
 		);
-	/*
-	cmbt_skills[to_skill("none")] = new combat_skill(
+	cmbt_skills[to_skill("Clobber")] = new combat_skill(
 		to_skill("none"),
-		weapon_dmg,
+		"WEAPON_DMG+ceil(sqrt(BONUS_WEAPON_DAMAGE))+ceil(sqrt(COLD_DMG))+ceil(sqrt(HOT_DMG))+ceil(sqrt(SLEAZE_DMG))+ceil(sqrt(SPOOKY_DMG))+ceil(sqrt(STENCH_DMG))",
 		int [element]  {},
 		int [element]  {},
 		float [string] {}
+		boolean [string] {"base" : true}
+		);
+	cmbt_skills[to_skill("Lunge Smack")] = new combat_skill(
+		to_skill("Lunge Smack"),
+		weapon_dmg + "+5",
+		int [element]  {},
+		int [element]  {},
+		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 1}
 		boolean [string] {"attack" : true}
 		);
-*/
+	cmbt_skills[to_skill("Thrust-Smack")] = new combat_skill(
+		to_skill("Thrust-Smack"),
+		weapon_dmg,
+		int [element]  {},
+		int [element]  {},
+		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 2}
+		boolean [string] {"attack" : true}
+		);
+	cmbt_skills[to_skill("Lunging Thrust-Smack")] = new combat_skill(
+		to_skill("Lunging Thrust-Smack"),
+		weapon_dmg,
+		int [element]  {},
+		int [element]  {},
+		float [string] {"ATTK_TYPE_STAT_MOD" : 1.25, "ATK_TYPE_WPN_DMG_MOD" : 3}
+		boolean [string] {"attack" : true}
+		);
+	cmbt_skills[to_skill("Northern Explosion")] = new combat_skill(
+		to_skill("Northern Explosion"),
+		weapon_dmg,
+		int [element]  {},
+		int [element]  {},
+		float [string] {"ATTK_TYPE_STAT_MOD" : 1.3, "ATK_TYPE_WPN_DMG_MOD" : 3}
+		boolean [string] {"attack" : true}
+		);
 
 
 //////////////////////////////////
@@ -261,6 +291,14 @@ float dmg_eval(string expr, float[string] vars)
 	//WPN_TYPE_STAT_MOD - 1 for melee, .75 range, .25 no weapon
 	//ATK_TYPE_WPN_DMG_MOD - 2 for thrust-smack/mighty axing, 3 for lunging-thrust-smack/northern explosion
 	//		5 for bashing slam smash, 5 for cleave, 1 otherwise
+	//BONUS_WEAPON_DMG includes ranged damage for ranged weapon
+
+	//WEAPON_DMG - weapon damage
+	//BONUS_WEAPON_DAMAGE - bonus weapon damage
+	//ATTK_TYPE_STAT_MOD - 1.25 non-seal clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
+	//WPN_TYPE_STAT_MOD - 1 for melee, .75 range, .25 no weapon
+	//ATK_TYPE_WPN_DMG_MOD - 2 for thrust-smack/mighty axing, 3 for lunging-thrust-smack/northern explosion
+	//		5 for bashing slam smash, 5 for cleave, 1 otherwise
 	//BONUS_WEAPON_DMG includes ranged damage for ranged weapon  
 	buffer b;
 	matcher m = create_matcher( "\\b[a-zA-Z0-9_]*\\b", expr );
@@ -278,16 +316,33 @@ float dmg_eval(string expr, float[string] vars)
 				m.append_replacement(b, my_buffedstat($stat[moxie]).to_string());
 			break;
 			case "WEAPON_DMG":
-				m.append_replacement(b, to_float(equipped_item($slot[weapon]).get_power())*.15.to_string());
+				m.append_replacement(b, to_float(equipped_item($slot[weapon]).get_power()*.15).to_string());
 			break;
-			case "OFFHAND":
-				if(weapon_type(equipped_item($slot[off-hand])) -= $stat[none])
+			case "WEAPON_STAT":
+				if(weapon_type(equipped_item($slot[weapon])) == $stat[moxie])
 				{
-					m.append_replacement(b, (0.0).to_string());
+					m.append_replacement(b, my_buffedstat($stat[moxie]).to_string());
 				}
 				else
 				{
-					m.append_replacement(b, to_float(equipped_item($slot[off-hand]).get_power())*.15.to_string());
+					m.append_replacement(b, my_buffedstat($stat[muscle]).to_string());
+				}
+			break;
+			case "OFFHAND":
+				if(equipped_item($slot[off-hand]) != $item[none])
+				{
+					if(weapon_type(equipped_item($slot[off-hand])) != $stat[none])
+					{
+						m.append_replacement(b, "0");
+					}
+					else
+					{
+						m.append_replacement(b, (to_float(equipped_item($slot[off-hand]).get_power()*.15)).to_string());
+					}
+				}
+				else
+				{
+					m.append_replacement(b, "0");
 				}
 			break;
 			case "WPN_TYPE_STAT_MOD":
@@ -372,13 +427,13 @@ float dmg_eval(string expr, float[string] vars)
 		// could implement functions, pref access, etc. here
 	}
 	m.append_tail(b);
-	print(b.to_string());
+	//print(b.to_string());
 	return modifier_eval(b.to_string());
 }
 
 float el_damage_dealt(combat_skill spell, float min, float max, element el, monster mon)
 {
-	print (spell.sk.to_string());
+	//print (spell.sk.to_string());
 	/*
 	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA+1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
 	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
@@ -398,6 +453,7 @@ float el_damage_dealt(combat_skill spell, float min, float max, element el, mons
 	}
 	vars["base"] = (max + min)/2;
 	vars["MON_GROUP"] = 1; // to replace
+	vars["MONDEF"] = mon.monster_defense();
 	switch(el)
 	{
 		case $element[hot]:
@@ -511,9 +567,16 @@ float damage_dealt(combat_skill spell, monster mon)
 		}
 		else
 		{
-			foreach el in spell.min_damage
+			if(spell.min_damage.count() == 0)
 			{
-				total_damage += el_damage_dealt(spell, spell.min_damage[el], spell.max_damage[el], el, mon);
+				total_damage += el_damage_dealt(spell, 0, 0, $element[none], mon);
+			}
+			else
+			{
+				foreach el in spell.min_damage
+				{
+					total_damage += el_damage_dealt(spell, spell.min_damage[el], spell.max_damage[el], el, mon);
+				}
 			}
 		}
 	}
@@ -534,27 +597,32 @@ float damage_dealt(skill spell)
 //////////////////////////////////
 //Skill Picking
 
-	skdmg [int] best_spells(monster mon, boolean have_only)
+	skdmg [int] best_skills(string sktype,monster mon, boolean have_only)
 	{
 		float mp_regen = (numeric_modifier("mp regen min") + numeric_modifier("mp regen max"))/2;
 		boolean [skill] choices;
-		foreach num in spell_skills
+		foreach sk in cmbt_skills
 		{
-			if(have_skill(spell_skills[num]) && have_only)
+			//print(sk.to_string());
+			//print(cmbt_skills[sk].dmg_exp);
+			if (sktype == "" || cmbt_skills[sk].props contains sktype)
 			{
-				choices[spell_skills[num]] = true;
-			}
-			else if (!have_only)
-			{
-				choices[spell_skills[num]] = true;
+				if(have_skill(sk) && have_only)
+				{
+					choices[sk] = true;
+				}
+				else if (!have_only)
+				{
+					choices[sk] = true;
+				}
 			}
 			/*
-			if(mp_cost(spell_skills[num]) < mp_regen && have_skill(spell_skills[num]))
+			if(mp_cost(sk) < mp_regen && have_skill(sk))
 			{
-				choices[spell_skills[num]] = true;
+				choices[sk] = true;
 			}*/
 		}
-		skdmg [int] spellranks;
+		skdmg [int] skillranks;
 		foreach sk in choices
 		{
 			skdmg myskdmg = new skdmg();
@@ -563,52 +631,76 @@ float damage_dealt(skill spell)
 			myskdmg.ttd = ceil(mon.monster_hp()/ max(1,myskdmg.dmg));
 			myskdmg.tmtw = myskdmg.ttd * mp_cost(sk);
 			myskdmg.dmg_taken = mon.expected_damage() * myskdmg.ttd;
-			spellranks[spellranks.count()] = myskdmg;
+			skillranks[skillranks.count()] = myskdmg;
 
 		}
-		foreach num in spellranks
+		foreach num in skillranks
 		{
-			if(spellranks[num].ttd > 15)
+			if(skillranks[num].ttd > 15)
 			{
-				remove spellranks[num];
+				remove skillranks[num];
 			}
 		}
-		sort spellranks by value.tmtw;
-		return spellranks;
+		sort skillranks by value.tmtw;
+		return skillranks;
 	}
-	skdmg [int] best_spells(monster mon)
+	skdmg [int] best_skills(monster mon)
 	{
-		return best_spells(mon, true);
+		return best_skills("", mon, true);
 	}
-	skdmg [int] best_spells(boolean have_only)
+	skdmg [int] best_skills(string sktype, monster mon)
 	{
-		return best_spells(last_monster(), have_only);
+		return best_skills(sktype, mon, true);
 	}
-	skdmg [int] best_spells()
+	skdmg [int] best_skills(boolean have_only)
 	{
-		return best_spells(last_monster(), true);
+		return best_skills("",last_monster(), have_only);
+	}
+	skdmg [int] best_skills(string sktype, boolean have_only)
+	{
+		return best_skills(sktype, last_monster(), have_only);
+	}
+	skdmg [int] best_skills()
+	{
+		return best_skills("",last_monster(), true);
+	}
+	skdmg [int] best_skills(string sktype)
+	{
+		return best_skills(sktype, last_monster(), true);
 	}
 
-	void print_best_spells(monster mon, boolean have_only)
+	void print_best_skills(string sktype, monster mon, boolean have_only)
 	{
 		print("monster is: " +  mon.to_string());
-		skdmg [int] bs = best_spells(mon, have_only);
+		skdmg [int] bs = best_skills(sktype,mon, have_only);
 		foreach num in bs
 		{
 			print_html("%s has damage %s, ttd %s, mana used %s, dmg_taken %s",string [int] {to_string(bs[num].sk),to_string(bs[num].dmg),to_string(bs[num].ttd),to_string(bs[num].tmtw),to_string(bs[num].dmg_taken)});
 		}
 	}
-	void print_best_spells(boolean have_only)
+	void print_best_skills(string sktype,boolean have_only)
 	{
-		print_best_spells(last_monster(), have_only);
+		print_best_skills(sktype,last_monster(), have_only);
 	}
-	void print_best_spells(monster mon)
+	void print_best_skills(boolean have_only)
 	{
-		print_best_spells(mon, true);
+		print_best_skills("",last_monster(), have_only);
 	}
-	void print_best_spells()
+	void print_best_skills(string sktype, monster mon)
 	{
-		print_best_spells(last_monster(), true);
+		print_best_skills(sktype,mon, true);
+	}
+	void print_best_skills(monster mon)
+	{
+		print_best_skills("",mon, true);
+	}
+	void print_best_skills(string sktype)
+	{
+		print_best_skills(sktype,last_monster(), true);
+	}
+	void print_best_skills()
+	{
+		print_best_skills("",last_monster(), true);
 	}
 
 void beefy_combat_tools_parse(string command)
@@ -620,28 +712,55 @@ void beefy_combat_tools_parse(string command)
 			switch(arry.count())
 			{
 				case 1:
-					print_best_spells(false);
+					print_best_skills("spell",false);
 				break;
 				case 2:
-					print_best_spells(arry[1].to_monster(),false);
+					print_best_skills("spell",arry[1].to_monster(),false);
 				break;
 			}
-			case "spell":
+		case "spell":
 			switch(arry.count())
 			{
 				case 1:
-					print_best_spells();
+					print_best_skills("spell");
 				break;
 				case 2:
-					print_best_spells(arry[1].to_monster());
+					print_best_skills("spell",arry[1].to_monster());
 				break;
 			}
 		break;
 		case "all":
+			switch(arry.count())
+			{
+				case 1:
+					print_best_skills("",false);
+				break;
+				case 2:
+					print_best_skills("",arry[1].to_monster(),false);
+				break;
+			}
 		break;
 		case "attack":
+			switch(arry.count())
+			{
+				case 1:
+					print_best_skills("attack");
+				break;
+				case 2:
+					print_best_skills("attack",arry[1].to_monster());
+				break;
+			}
 		break;
 		case "all attacks":
+			switch(arry.count())
+			{
+				case 1:
+					print_best_skills("attack",false);
+				break;
+				case 2:
+					print_best_skills("attack",arry[1].to_monster(),false);
+				break;
+			}
 		break;
 		default:
 		break;
