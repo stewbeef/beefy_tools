@@ -462,23 +462,21 @@ float damage_dealt(skill spell)
 
 void beefy_combat_tools_parse(string command)
 {
-	string [int] arry = req.split_string(" ");
+	string [int] arry = command.split_string(" ");
 	switch (arry[0])
 	{
-		case "choose":
+		case "spell":
 			switch(arry.count())
 			{
 				case 1:
-					print(damage_dealt(arry[0].to_skill(),arry[1].to_monster()).to_string());
+					print_best_spells();
 				break;
 				case 2:
-					skdmg [int] bdmgs = best_spells(arry[1].to_monster());
-					foreach num in bdmgs
-					{
-						print(bdmgs[num].sk.to_string() + " : " + bdmgs[num].dmg.to_string());
-					}
+					print_best_spells(arry[1].to_monster());
 				break;
 			}
+		break;
+		default:
 		break;
 	}
 	else
