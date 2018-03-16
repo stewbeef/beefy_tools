@@ -38,8 +38,8 @@ script "beefy_combat_tools.ash";
 		to_skill("Salsaball"),
 		8,
 		1,
-		float [element]  {$element[hot] : 2},
-		float [element]  {$element[hot] : 3},
+		int [element]  {$element[hot] : 2},
+		int [element]  {$element[hot] : 3},
 		float [stat] {$stat[mysticality] : 0.0},
 		boolean [string] {"sauce" = true}
 		);
