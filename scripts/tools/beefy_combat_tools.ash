@@ -233,7 +233,7 @@ import "beefy_tools.ash";
 //////////////////////////////////
 //Spell damage
 
-float eval(string expr, float[string] vars)
+float dmg_eval(string expr, float[string] vars)
 {
    buffer b;
    matcher m = create_matcher( "\\b[a-z_][a-zA-Z0-9_]*\\b", expr );
@@ -245,6 +245,7 @@ float eval(string expr, float[string] vars)
       // could implement functions, pref access, etc. here
    }
    m.append_tail(b);
+   print(b.to_string());
    return modifier_eval(b.to_string());
 }
 
@@ -353,7 +354,7 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 			vars["el_mult"] = 1;
 		break;
 	}
-	return eval(dmg_expr, vars);
+	return dmg_eval(dmg_expr, vars);
 }
 
 float damage_dealt(combat_spell spell, monster mon)
