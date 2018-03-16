@@ -289,11 +289,11 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 	{
 		vars[var] = spell.dmg_props[var];
 	}
-	if(!vars contains "SAUCE")
+	if(!(vars contains "SAUCE"))
 	{
 		vars["SAUCE"] = 0.0;
 	}
-	if(!vars contains "PASTA")
+	if(!(vars contains "PASTA"))
 	{PASTA
 		vars["PASTA"] = 0.0;
 	}
