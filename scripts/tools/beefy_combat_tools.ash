@@ -607,7 +607,7 @@ float damage_dealt(skill spell)
 			//print(cmbt_skills[sk].dmg_exp);
 			if (sktype == "" || cmbt_skills[sk].props contains sktype)
 			{
-				if(have_skill(sk) && have_only)
+				if((have_skill(sk) && have_only) || sk == $skill[none])
 				{
 					choices[sk] = true;
 				}
