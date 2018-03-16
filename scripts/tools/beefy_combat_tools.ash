@@ -6,8 +6,8 @@ import "beefy_tools.ash";
 
 	//////////////////////////////////
 	//Spells
-	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*el_mult*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
-	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*el_mult*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA + 1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA + 1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
 	//skill() 0 1
 	//effect() 0 1
 	//class() 0 1
@@ -281,8 +281,8 @@ float dmg_eval(string expr, float[string] vars)
 float el_damage_dealt(combat_spell spell, float min, float max, element el, monster mon)
 {
 	/*
-	string capped_spell_dmg = "ceil(el_mult*multiplier*((base+floor(MYS*myst_scale))*crit+bonus_spell_damage+bonus_elemental_damage))";
-	string uncapped_spell_dmg = "ceil(el_mult*multiplier*min(cap,(base+floor(MYS*myst_scale))*crit+bonus_spell_damage+bonus_elemental_damage))";
+	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA + 1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
 	*/
 	float [string] vars;
 	foreach var in spell.dmg_props
@@ -302,89 +302,89 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 	switch(el)
 	{
 		case $element[hot]:
-			vars["bonus_elemental_damage"] = numeric_modifier("hot spell damage");
+			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("hot spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[hot]:
-					vars["el_mult"] = 0;
+					vars["EL_MULT"] = 0;
 				break;
 				case $element[cold]:
 				case $element[spooky]:
-					vars["el_mult"] = 2;
+					vars["EL_MULT"] = 2;
 				break;
 				default:
-					vars["el_mult"] = 1;
+					vars["EL_MULT"] = 1;
 				break;
 			}
 		break;
 		case $element[cold]:
-			vars["bonus_elemental_damage"] = numeric_modifier("cold spell damage");
+			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("cold spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[cold]:
-					vars["el_mult"] = 0;
+					vars["EL_MULT"] = 0;
 				break;
 				case $element[sleaze]:
 				case $element[stench]:
-					vars["el_mult"] = 2;
+					vars["EL_MULT"] = 2;
 				break;
 				default:
-					vars["el_mult"] = 1;
+					vars["EL_MULT"] = 1;
 				break;
 			}
 		break;
 		case $element[sleaze]:
-			vars["bonus_elemental_damage"] = numeric_modifier("sleaze spell damage");
+			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("sleaze spell damage");
 			switch(mon.monster_element())
 			{
 				case $element
 				[hot]:
 				case $element[stench]:
-					vars["el_mult"] = 2;
+					vars["EL_MULT"] = 2;
 				break;
 				case $element[sleaze]:
-					vars["el_mult"] = 0;
+					vars["EL_MULT"] = 0;
 				break;
 				default:
-					vars["el_mult"] = 1;
+					vars["EL_MULT"] = 1;
 				break;
 			}
 		break;
 		case $element[spooky]:
-			vars["bonus_elemental_damage"] = numeric_modifier("spooky spell damage");
+			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("spooky spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[cold]:
 				case $element[sleaze]:
-					vars["el_mult"] = 2;
+					vars["EL_MULT"] = 2;
 				break;
 				case $element[spooky]:
-					vars["el_mult"] = 0;
+					vars["EL_MULT"] = 0;
 				break;
 				default:
-					vars["el_mult"] = 1;
+					vars["EL_MULT"] = 1;
 				break;
 			}
 		break;
 		case $element[stench]:
+			vars["bonus_elemental_damage"] = numeric_modifier("stench spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[hot]:
 				case $element[spooky]:
-					vars["el_mult"] = 2;
+					vars["EL_MULT"] = 2;
 				break;
 				case $element[stench]:
-					vars["el_mult"] = 0;
+					vars["EL_MULT"] = 0;
 				break;
 				default:
-					vars["el_mult"] = 1;
+					vars["EL_MULT"] = 1;
 				break;
 			}
-			vars["bonus_elemental_damage"] = numeric_modifier("stench spell damage");
 		break;
 		default:
 			vars["bonus_elemental_damage"] = 1;
-			vars["el_mult"] = 1;
+			vars["EL_MULT"] = 1;
 		break;
 	}
 	return dmg_eval(spell.dmg_exp, vars);
