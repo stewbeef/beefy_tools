@@ -432,7 +432,7 @@ float damage_dealt(skill spell)
 		sort spellranks by value.tmtw;
 		return spellranks;
 	}
-	skdmg [int] best_spells(monster mon, boolean have_only)
+	skdmg [int] best_spells(monster mon)
 	{
 		return best_spells(mon, true);
 	}
