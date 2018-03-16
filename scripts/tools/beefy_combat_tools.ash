@@ -465,7 +465,17 @@ void beefy_combat_tools_parse(string command)
 	string [int] arry = command.split_string(",");
 	switch (arry[0])
 	{
-		case "spell":
+		case "all spell":
+			switch(arry.count())
+			{
+				case 1:
+					print_best_spells(false);
+				break;
+				case 2:
+					print_best_spells(arry[1].to_monster(),false);
+				break;
+			}
+			case "spell":
 			switch(arry.count())
 			{
 				case 1:
@@ -479,6 +489,8 @@ void beefy_combat_tools_parse(string command)
 		case "all":
 		break;
 		case "attack":
+		break;
+		case "all attack":
 		break;
 		default:
 		break;
