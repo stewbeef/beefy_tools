@@ -67,7 +67,7 @@ import "beefy_tools.ash";
 		capped_spell_dmg,
 		int [element]  {$element[none] : 14},
 		int [element]  {$element[none] : 18},
-		float [string] {"myst_scale" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
 		);
 
 	cmbt_spells[to_skill("Saucestorm")] = new combat_spell(
