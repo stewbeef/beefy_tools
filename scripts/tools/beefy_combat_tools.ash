@@ -264,9 +264,6 @@ float dmg_eval(string expr, float[string] vars)
 			case "RANGED_MULT":
 				m.append_replacement(b, (numeric_modifier("Ranged Damage Percent")/100).to_string());
 				break;
-			case "SPELL_MULT":
-				m.append_replacement(b, (numeric_modifier("spell damage percent")/100).to_string());
-				break;
 			default:
 				if (vars contains var)
 				{
