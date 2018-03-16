@@ -476,24 +476,12 @@ void beefy_combat_tools_parse(string command)
 				break;
 			}
 		break;
+		case "all":
+		break;
+		case "attack":
+		break;
 		default:
 		break;
-	}
-	else
-	{
-		
-		if(arry[0] == "choose")
-		{
-			skdmg [int] bdmgs = best_spells();
-			foreach num in bdmgs
-			{
-				print(bdmgs[num].sk.to_string() + " : " + bdmgs[num].dmg.to_string());
-			}
-		}
-		else
-		{
-			print(damage_dealt(arry[0].to_skill()).to_string());
-		}
 	}
 }
 
