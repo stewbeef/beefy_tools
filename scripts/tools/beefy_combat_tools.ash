@@ -6,21 +6,31 @@ import "beefy_tools.ash";
 
 	//////////////////////////////////
 	//Spells
-	string capped_spell_dmg = "";
-	string uncapped_spell_dmg = "";
-
+	string capped_spell_dmg = "ceil(min(GROUPSIZE,groupmax)*el_mult*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*el_mult*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA + 1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	//skill() 0 1
+	//effect() 0 1
+	//class() 0 1
+	//SAUCE 0 or 1 if sauce spell
+	//MON_GROUP monster group size
+	//SPELL_GROUP spell group size
+	//CAP spell damage cap
+	//MYST_SCALING mysticality scaling
+	//CRIT crit chance
+	//BONUS_SPELL_DAMAGE bonus spell damage
+	//BONUS_ELEMENTAL_DAMAGE bonus elemental damage
+	//SPELL_CRIT Spell Critical Percent
+	//CRIT Critical Hit Percent
+	//SPELL_MULT spell percent damage
+	//PASTA 0 or 1 if pasta spell
 	record combat_spell
 	{
 		skill sk;
+		string dmg_exp;
 		int [element] min_damage;
 		int [element] max_damage;
-		int cap;
-		int groupmax;		
-		float [stat] boost;
-		boolean [string] props;
 		float [string] dmg_props;
-		
-		
+		boolean [string] props;		
 	};
 	record skdmg
 	{
@@ -35,173 +45,147 @@ import "beefy_tools.ash";
 	skill [int] spell_skills = {to_skill("Salsaball"),to_skill("Stream of Sauce"),to_skill("Surge of Icing"),to_skill("Saucestorm"),to_skill(4023),to_skill("Wave of Sauce"),to_skill("Saucecicle"),to_skill("Saucegeyser"),to_skill("Saucemageddon"),to_skill("Spaghetti Spear"),to_skill("Ravioli Shurikens"),to_skill("Candyblast"),to_skill("Cannelloni Cannon"),to_skill("Stringozzi Serpent"),to_skill("Stuffed Mortar Shell"),to_skill("Weapon of the Pastalord"),to_skill("Fearful Fettucini")};
 	boolean [skill] sk_cast_once;
 	sk_cast_once[to_skill("Stuffed Mortar Shell")] = true;
-
+//Saucerer
 	cmbt_spells[to_skill("Salsaball")] = new combat_spell(
 		to_skill("Salsaball"),
+		capped_spell_dmg,
 		int [element]  {$element[hot] : 2},
 		int [element]  {$element[hot] : 3},
-		8,
-		1,
-		float [stat] {$stat[mysticality] : 0.0},
-		boolean [string] {"sauce" : true}
+		float [string] {"MYST_SCALING" : 0.0, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
 		);
-	/*
-	cmbt_spells[to_skill("Salsaball")].sk = to_skill("Salsaball");
-	cmbt_spells[to_skill("Salsaball")].min_damage[$element[hot]] = 2;
-	cmbt_spells[to_skill("Salsaball")].max_damage[$element[hot]] = 3;
-	cmbt_spells[to_skill("Salsaball")].boost[$stat[mysticality]] = 0.0;
-	cmbt_spells[to_skill("Salsaball")].props["sauce"] = true;
-	*/
+
 	cmbt_spells[to_skill("Stream of Sauce")] = new combat_spell(
 		to_skill("Stream of Sauce"),
+		capped_spell_dmg,
 		int [element]  {$element[hot] : 9},
 		int [element]  {$element[hot] : 11},
-		24,
-		1,
-		float [stat] {$stat[mysticality] : 0.0},
-		boolean [string] {"sauce" : true}
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
 		);
-	cmbt_spells[to_skill("Stream of Sauce")] = new combat_spell();
-	cmbt_spells[to_skill("Stream of Sauce")].sk = to_skill("Stream of Sauce");
-	cmbt_spells[to_skill("Stream of Sauce")].min_damage[$element[hot]] = 9;
-	cmbt_spells[to_skill("Stream of Sauce")].max_damage[$element[hot]] = 11;
-	cmbt_spells[to_skill("Stream of Sauce")].boost[$stat[mysticality]] = 0.2;
-	cmbt_spells[to_skill("Stream of Sauce")].cap = 24;
-	cmbt_spells[to_skill("Stream of Sauce")].props["sauce"] = true;
 
-	cmbt_spells[to_skill("Surge of Icing")] = new combat_spell();
-	cmbt_spells[to_skill("Surge of Icing")].sk = to_skill("Surge of Icing");
-	cmbt_spells[to_skill("Surge of Icing")].min_damage[$element[none]] = 14;
-	cmbt_spells[to_skill("Surge of Icing")].max_damage[$element[none]] = 18;
-	cmbt_spells[to_skill("Surge of Icing")].boost[$stat[mysticality]] = 0.2;
-	cmbt_spells[to_skill("Surge of Icing")].cap = 24;
-	cmbt_spells[to_skill("Surge of Icing")].props["sauce"] = true;
+	cmbt_spells[to_skill("Surge of Icing")] = new combat_spell(
+		to_skill("Surge of Icing"),
+		capped_spell_dmg,
+		int [element]  {$element[none] : 14},
+		int [element]  {$element[none] : 18},
+		float [string] {"myst_scale" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
+		);
 
-	cmbt_spells[to_skill("Saucestorm")] = new combat_spell();
-	cmbt_spells[to_skill("Saucestorm")].sk = to_skill("Saucestorm");
-	cmbt_spells[to_skill("Saucestorm")].min_damage[$element[hot]] = 20;
-	cmbt_spells[to_skill("Saucestorm")].max_damage[$element[hot]] = 24;
-	cmbt_spells[to_skill("Saucestorm")].min_damage[$element[cold]] = 20;
-	cmbt_spells[to_skill("Saucestorm")].max_damage[$element[cold]] = 24;
-	cmbt_spells[to_skill("Saucestorm")].groupmax = 2;
-	cmbt_spells[to_skill("Saucestorm")].boost[$stat[mysticality]] = 0.2;
-	cmbt_spells[to_skill("Saucestorm")].cap = 50;
-	cmbt_spells[to_skill("Saucestorm")].props["sauce"] = true;
+	cmbt_spells[to_skill("Saucestorm")] = new combat_spell(
+		to_skill("Saucestorm"),
+		capped_spell_dmg,
+		int [element]  {$element[hot] : 20,$element[cold] : 20},
+		int [element]  {$element[hot] : 24,$element[cold] : 24},
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "SAUCE" : 1.0}
+		);
 
 		//Käsesoßesturm
-	cmbt_spells[to_skill(4023)] = new combat_spell();
-	cmbt_spells[to_skill(4023)].sk = to_skill(4023);
-	cmbt_spells[to_skill(4023)].min_damage[$element[stench]] = 40;
-	cmbt_spells[to_skill(4023)].max_damage[$element[stench]] = 44;
-	cmbt_spells[to_skill(4023)].groupmax = 5;
-	cmbt_spells[to_skill(4023)].boost[$stat[mysticality]] = 0.3;
-	cmbt_spells[to_skill(4023)].cap = 100;
-	cmbt_spells[to_skill("4023")].props["sauce"] = true;
+	cmbt_spells[to_skill(4023)] = new combat_spell(
+		to_skill("4023"),
+		capped_spell_dmg,
+		int [element]  {$element[stench] : 40},
+		int [element]  {$element[stench] : 44},
+		float [string] {"MYST_SCALING" : 0.3, "CAP" : 2100.0, "SPELL_GROUP" : 5.0, "SAUCE" : 1.0}
+		);
 
-	cmbt_spells[to_skill("Wave of Sauce")] = new combat_spell();
-	cmbt_spells[to_skill("Wave of Sauce")].sk = to_skill("Wave of Sauce");
-	cmbt_spells[to_skill("Wave of Sauce")].min_damage[$element[hot]] = 45;
-	cmbt_spells[to_skill("Wave of Sauce")].max_damage[$element[hot]] = 50;
-	cmbt_spells[to_skill("Wave of Sauce")].groupmax = 2;
-	cmbt_spells[to_skill("Wave of Sauce")].boost[$stat[mysticality]] = 0.3;
-	cmbt_spells[to_skill("Wave of Sauce")].cap = 100;
-	cmbt_spells[to_skill("Wave of Sauce")].props["sauce"] = true;
+	cmbt_spells[to_skill("Wave of Sauce")] = new combat_spell(
+		to_skill("Wave of Sauce"),
+		capped_spell_dmg,
+		int [element]  {$element[hot] : 45},
+		int [element]  {$element[hot] : 50},
+		float [string] {"MYST_SCALING" : 0.3, "CAP" : 100.0, "SPELL_GROUP" : 2.0, "SAUCE" : 1.0}
+		);
 
-	cmbt_spells[to_skill("Saucecicle")] = new combat_spell();
-	cmbt_spells[to_skill("Saucecicle")].sk = to_skill("Saucecicle");
-	cmbt_spells[to_skill("Saucecicle")].min_damage[$element[cold]] = 45;
-	cmbt_spells[to_skill("Saucecicle")].max_damage[$element[cold]] = 50;
-	cmbt_spells[to_skill("Saucecicle")].boost[$stat[mysticality]] = 0.4;
-	cmbt_spells[to_skill("Saucecicle")].cap = 150;
-	cmbt_spells[to_skill("Saucecicle")].props["sauce"] = true;
+	cmbt_spells[to_skill("Saucecicle")] = new combat_spell(
+		to_skill("Saucecicle"),
+		capped_spell_dmg,
+		int [element]  {$element[cold] : 45},
+		int [element]  {$element[cold] : 50},
+		float [string] {"MYST_SCALING" : 0.4, "CAP" : 150.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
+		);
 
-	cmbt_spells[to_skill("Saucegeyser")] = new combat_spell();
-	cmbt_spells[to_skill("Saucegeyser")].sk = to_skill("Saucegeyser");
-	cmbt_spells[to_skill("Saucegeyser")].min_damage[$element[hot]] = 60;
-	cmbt_spells[to_skill("Saucegeyser")].max_damage[$element[hot]] = 70;
-	cmbt_spells[to_skill("Saucegeyser")].min_damage[$element[cold]] = 60;
-	cmbt_spells[to_skill("Saucegeyser")].max_damage[$element[cold]] = 70;
-	cmbt_spells[to_skill("Saucegeyser")].props["best"] = true;
-	cmbt_spells[to_skill("Saucegeyser")].groupmax = 3;
-	cmbt_spells[to_skill("Saucegeyser")].boost[$stat[mysticality]] = 0.4;
-	cmbt_spells[to_skill("Saucegeyser")].cap = 0;
-	cmbt_spells[to_skill("Saucegeyser")].props["sauce"] = true;
+	cmbt_spells[to_skill("Saucegeyser")] = new combat_spell(
+		to_skill("Saucegeyser"),
+		uncapped_spell_dmg,
+		int [element]  {$element[hot] : 60,$element[cold] : 60},
+		int [element]  {$element[hot] : 70,$element[cold] : 70},
+		float [string] {"MYST_SCALING" : 0.4, "SPELL_GROUP" : 3.0, "SAUCE" : 1.0},
+		boolean [string] {"best" : true}
+		);
 
-	cmbt_spells[to_skill("Saucemageddon")] = new combat_spell();
-	cmbt_spells[to_skill("Saucemageddon")].sk = to_skill("Saucemageddon");
-	cmbt_spells[to_skill("Saucemageddon")].min_damage[$element[hot]] = 80;
-	cmbt_spells[to_skill("Saucemageddon")].max_damage[$element[hot]] = 90;
-	cmbt_spells[to_skill("Saucemageddon")].min_damage[$element[cold]] = 80;
-	cmbt_spells[to_skill("Saucemageddon")].max_damage[$element[cold]] = 90;
-	cmbt_spells[to_skill("Saucemageddon")].props["best"] = true;
-	cmbt_spells[to_skill("Saucemageddon")].groupmax = 5;
-	cmbt_spells[to_skill("Saucemageddon")].boost[$stat[mysticality]] = 0.5;
-	cmbt_spells[to_skill("Saucemageddon")].cap = 0;
-	cmbt_spells[to_skill("Saucemageddon")].props["sauce"] = true;
+	cmbt_spells[to_skill("Saucemageddon")] = new combat_spell(
+		to_skill("Saucemageddon"),
+		uncapped_spell_dmg,
+		int [element]  {$element[hot] : 80,$element[cold] : 80},
+		int [element]  {$element[hot] : 90,$element[cold] : 90},
+		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 5.0, "SAUCE" : 1.0},
+		boolean [string] {"best" : true}
+		);
 
-	//Pastamancer
-	cmbt_spells[to_skill("Spaghetti Spear")] = new combat_spell();
-	cmbt_spells[to_skill("Spaghetti Spear")].sk = to_skill("Spaghetti Spear");
-	cmbt_spells[to_skill("Spaghetti Spear")].min_damage[$element[none]] = 80;
-	cmbt_spells[to_skill("Spaghetti Spear")].max_damage[$element[none]] = 90;
-	cmbt_spells[to_skill("Spaghetti Spear")].boost[$stat[mysticality]] = 0.0;
-	cmbt_spells[to_skill("Spaghetti Spear")].cap = 8;
-	cmbt_spells[to_skill("Spaghetti Spear")].props["pasta"] = true;
+//Pastamancer
+	cmbt_spells[to_skill("Spaghetti Spear")] = new combat_spell(
+		to_skill("Spaghetti Spear"),
+		capped_spell_dmg,
+		int [element]  {$element[none] : 2},
+		int [element]  {$element[none] : 3},
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
+		);
 	
 
-	cmbt_spells[to_skill("Ravioli Shurikens")] = new combat_spell();
-	cmbt_spells[to_skill("Ravioli Shurikens")].sk = to_skill("Ravioli Shurikens");
-	cmbt_spells[to_skill("Ravioli Shurikens")].min_damage[$element[none]] = 2;
-	cmbt_spells[to_skill("Ravioli Shurikens")].max_damage[$element[none]] = 4;
-	cmbt_spells[to_skill("Ravioli Shurikens")].boost[$stat[mysticality]] = 0;
-	cmbt_spells[to_skill("Ravioli Shurikens")].cap = 10;
-	cmbt_spells[to_skill("Ravioli Shurikens")].props["pasta random"] = true;
-	cmbt_spells[to_skill("Ravioli Shurikens")].props["pasta"] = true;
-	cmbt_spells[to_skill("Ravioli Shurikens")].props["butr"] = true;
-	cmbt_spells[to_skill("Ravioli Shurikens")].dmg_props["repeat"] = 2;
+	cmbt_spells[to_skill("Ravioli Shurikens")] = new combat_spell(
+		to_skill("Ravioli Shurikens"),
+		capped_spell_dmg,
+		int [element]  {$element[none] : 2},
+		int [element]  {$element[none] : 34},
+		float [string] {"MYST_SCALING" : 0.0, "CAP" : 10.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0, "repeat" : 2},
+		boolean [string] {"pasta random" : true}
+		);
 
-	cmbt_spells[to_skill("Candyblast")] = new combat_spell();
-	cmbt_spells[to_skill("Candyblast")].sk = to_skill("Candyblast");
-	cmbt_spells[to_skill("Candyblast")].min_damage[$element[none]] = 8;
-	cmbt_spells[to_skill("Candyblast")].max_damage[$element[none]] = 16;
-	cmbt_spells[to_skill("Candyblast")].groupmax = 5;
-	cmbt_spells[to_skill("Candyblast")].boost[$stat[mysticality]] = 0.25;
-	cmbt_spells[to_skill("Candyblast")].cap = 50;
-	cmbt_spells[to_skill("Candyblast")].props["pasta"] = true;
+	cmbt_spells[to_skill("Candyblast")] = new combat_spell(
+		to_skill("Candyblast"),
+		capped_spell_dmg,
+		int [element]  {$element[none] : 8},
+		int [element]  {$element[none] : 16},
+		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
+		);
 
-	cmbt_spells[to_skill("Cannelloni Cannon")] = new combat_spell();
-	cmbt_spells[to_skill("Cannelloni Cannon")].sk = to_skill("Cannelloni Cannon");
-	cmbt_spells[to_skill("Cannelloni Cannon")].min_damage[$element[none]] = 16;
-	cmbt_spells[to_skill("Cannelloni Cannon")].max_damage[$element[none]] = 32;
-	cmbt_spells[to_skill("Cannelloni Cannon")].groupmax = 2;
-	cmbt_spells[to_skill("Cannelloni Cannon")].boost[$stat[mysticality]] = 0.25;
-	cmbt_spells[to_skill("Cannelloni Cannon")].cap = 50;
+	cmbt_spells[to_skill("Cannelloni Cannon")] = new combat_spell(
+		to_skill("Cannelloni Cannon"),
+		capped_spell_dmg,
+		int [element]  {$element[none] : 16},
+		int [element]  {$element[none] : 32},
+		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "PASTA" : 1.0},
+		boolean [string] {"pasta random" : true}
+		);
 	cmbt_spells[to_skill("Cannelloni Cannon")].props["pasta random"] = true;
 	cmbt_spells[to_skill("Cannelloni Cannon")].props["pasta"] = true;
 	cmbt_spells[to_skill("Cannelloni Cannon")].props["butr"] = true;
 
-	cmbt_spells[to_skill("Stringozzi Serpent")] = new combat_spell();
-	cmbt_spells[to_skill("Stringozzi Serpent")].sk = to_skill("Stringozzi Serpent");
-	cmbt_spells[to_skill("Stringozzi Serpent")].min_damage[$element[none]] = 16;
-	cmbt_spells[to_skill("Stringozzi Serpent")].max_damage[$element[none]] = 32;
-	cmbt_spells[to_skill("Stringozzi Serpent")].groupmax = 2;
-	cmbt_spells[to_skill("Stringozzi Serpent")].boost[$stat[mysticality]] = 0.25;
-	cmbt_spells[to_skill("Stringozzi Serpent")].cap = 75;
-	cmbt_spells[to_skill("Stringozzi Serpent")].props["pasta random"] = true;
-	cmbt_spells[to_skill("Stringozzi Serpent")].props["pasta"] = true;
-	cmbt_spells[to_skill("Stringozzi Serpent")].props["butr"] = true;
+	cmbt_spells[to_skill("Stringozzi Serpent")] = new combat_spell(
+		to_skill("Stringozzi Serpent"),
+		capped_spell_dmg,
+		int [element]  {$element[none] : 16},
+		int [element]  {$element[none] : 32},
+		float [string] {"MYST_SCALING" : 0.25, "CAP" : 75.0, "SPELL_GROUP" : 2.0, "PASTA" : 1.0},
+		boolean [string] {"pasta random" : true}
+		);
 
-	cmbt_spells[to_skill("Stuffed Mortar Shell")] = new combat_spell();
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].sk = to_skill("Stuffed Mortar Shell");
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].min_damage[$element[none]] = 32;
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].max_damage[$element[none]] = 64;
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].groupmax = 3;
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].boost[$stat[mysticality]] = 0.5;
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].cap = -1;
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].props["pasta random"] = true;
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].props["pasta"] = true;
+	cmbt_spells[to_skill("Stuffed Mortar Shell")] = new combat_spell(
+		to_skill("Stuffed Mortar Shell"),
+		uncapped_spell_dmg,
+		int [element]  {$element[none] : 32},
+		int [element]  {$element[none] : 64},
+		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 3.0, "PASTA" : 1.0},
+		boolean [string] {"pasta random" : true}
+		);
 
-	cmbt_spells[to_skill("Weapon of the Pastalord")] = new combat_spell();
+	cmbt_spells[to_skill("Weapon of the Pastalord")] = new combat_spell(
+		to_skill("Weapon of the Pastalord"),
+		uncapped_spell_dmg,
+		int [element]  {$element[none] : 32},
+		int [element]  {$element[none] : 64},
+		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
+		boolean [string] {"pastalord" : true}
+		);
 	cmbt_spells[to_skill("Weapon of the Pastalord")].sk = to_skill("Weapon of the Pastalord");
 	cmbt_spells[to_skill("Weapon of the Pastalord")].min_damage[$element[none]] = 32;
 	cmbt_spells[to_skill("Weapon of the Pastalord")].max_damage[$element[none]] = 64;
@@ -210,14 +194,13 @@ import "beefy_tools.ash";
 	cmbt_spells[to_skill("Weapon of the Pastalord")].props["pastalord"] = true;
 	cmbt_spells[to_skill("Weapon of the Pastalord")].props["pasta"] = true;
 
-	cmbt_spells[to_skill("Fearful Fettucini")] = new combat_spell();
-	cmbt_spells[to_skill("Fearful Fettucini")].sk = to_skill("Fearful Fettucini");
-	cmbt_spells[to_skill("Fearful Fettucini")].min_damage[$element[spooky]] = 32;
-	cmbt_spells[to_skill("Fearful Fettucini")].max_damage[$element[spooky]] = 64;
-	cmbt_spells[to_skill("Fearful Fettucini")].groupmax = 2;
-	cmbt_spells[to_skill("Fearful Fettucini")].boost[$stat[mysticality]] = 0.5;
-	cmbt_spells[to_skill("Fearful Fettucini")].cap = 0;
-	cmbt_spells[to_skill("Fearful Fettucini")].props["pasta"] = true;
+	cmbt_spells[to_skill("Fearful Fettucini")] = new combat_spell(
+		to_skill("Fearful Fettucini"),
+		uncapped_spell_dmg,
+		int [element]  {$element[spooky] : 32},
+		int [element]  {$element[spooky] : 64},
+		float [string] {"MYST_SCALING" : 0.5, "CAP" : 50.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
+		);
 	//////////////////////////////////
 	//Combat skills
 	record melee_skill
@@ -235,6 +218,23 @@ import "beefy_tools.ash";
 
 float dmg_eval(string expr, float[string] vars)
 {
+	//skill() 0 1
+	//effect() 0 1
+	//class() 0 1
+	//SAUCE 0 or 1 if sauce spell
+	//MON_GROUP monster group size
+	//SPELL_GROUP spell group size
+	//CAP spell damage cap
+	//MYST_SCALING mysticality scaling
+	//CRIT crit chance
+	//BONUS_SPELL_DAMAGE bonus spell damage
+	//BONUS_ELEMENTAL_DAMAGE bonus elemental damage
+	//SPELL_CRIT Spell Critical Percent
+	//CRIT Critical Hit Percent
+	//SPELL_MULT spell percent damage
+	//WEAPON_MULT weapon damage percent
+	//RANGED_MULT Ranged Weapon damage percent
+	//WEAPON_DAMAGE Weapon Damage  
 	buffer b;
 	matcher m = create_matcher( "\\b[a-zA-Z0-9_]*\\b", expr );
 	while (m.find()) {
@@ -250,6 +250,30 @@ float dmg_eval(string expr, float[string] vars)
 			case "MOX":
 				m.append_replacement(b, my_buffedstat($stat[moxie]).to_string());
 			break;
+			case "BONUS_SPELL_DAMAGE":
+				m.append_replacement(b, numeric_modifier("Spell Damage").to_string());
+				break;
+			case "WEAPON_DAMAGE":
+				m.append_replacement(b, numeric_modifier("Weapon Damage").to_string());
+				break;     
+			case "SPELL_CRIT":
+				m.append_replacement(b, (numeric_modifier("Spell Critical Percent")/100).to_string());
+				break;
+			case "CRIT":
+				m.append_replacement(b, (numeric_modifier("Critical Hit Percent")/100).to_string());
+				break;
+			case "SPELL_MULT"
+				m.append_replacement(b, (numeric_modifier("spell damage percent")/100).to_string());
+				break;
+			case "WEAPON_MULT"
+				m.append_replacement(b, (numeric_modifier("Weapon Damage Percent")/100).to_string());
+				break;
+			ase "RANGED_MULT"
+				m.append_replacement(b, (numeric_modifier("Ranged Damage Percent")/100).to_string());
+				break;
+			case "SPELL_MULT"
+				m.append_replacement(b, (numeric_modifier("spell damage percent")/100).to_string());
+				break;
 			default:
 				if (vars contains var)
 				{
@@ -266,22 +290,25 @@ float dmg_eval(string expr, float[string] vars)
 
 float el_damage_dealt(combat_spell spell, float min, float max, element el, monster mon)
 {
-	string dmg_expr;
+	/*
+	string capped_spell_dmg = "ceil(el_mult*multiplier*((base+floor(MYS*myst_scale))*crit+bonus_spell_damage+bonus_elemental_damage))";
+	string uncapped_spell_dmg = "ceil(el_mult*multiplier*min(cap,(base+floor(MYS*myst_scale))*crit+bonus_spell_damage+bonus_elemental_damage))";
+	*/
 	float [string] vars;
-	if(spell.cap == -1)
+	foreach var in spell.dmg_props
 	{
-		dmg_expr = "ceil(el_mult*multiplier*((base+floor(MYS*myst_scale))*crit+bonus_spell_damage+bonus_elemental_damage))";
+		vars[var] = spell.dmg_props[var];
 	}
-	else
+	if(!vars contains "SAUCE")
 	{
-		dmg_expr = "ceil(el_mult*multiplier*min(cap,(base+floor(MYS*myst_scale))*crit+bonus_spell_damage+bonus_elemental_damage))";
-		vars["cap"] = spell.cap;
+		vars["SAUCE"] = 0.0;
 	}
-	vars["multiplier"] = 1 + numeric_modifier("spell damage percent")/100;
+	if(!vars contains "PASTA")
+	{PASTA
+		vars["PASTA"] = 0.0;
+	}
 	vars["base"] = (max + min)/2;
-	vars["myst_scale"] = spell.boost[$stat[mysticality]];
-	vars["crit"] = 1;
-	vars["bonus_spell_damage"] = numeric_modifier("spell damage");
+	vars["MON_GROUP"] = 1; // to replace
 	switch(el)
 	{
 		case $element[hot]:
@@ -320,7 +347,8 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 			vars["bonus_elemental_damage"] = numeric_modifier("sleaze spell damage");
 			switch(mon.monster_element())
 			{
-				case $element[hot]:
+				case $element
+				[hot]:
 				case $element[stench]:
 					vars["el_mult"] = 2;
 				break;
@@ -369,7 +397,7 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 			vars["el_mult"] = 1;
 		break;
 	}
-	return dmg_eval(dmg_expr, vars);
+	return dmg_eval(spell.dmg_exp, vars);
 }
 
 float damage_dealt(combat_spell spell, monster mon)
