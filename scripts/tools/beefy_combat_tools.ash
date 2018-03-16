@@ -252,11 +252,11 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 	float [string] vars;
 	if(spell.cap == -1)
 	{
-		dmg_expr = "ceil(el_mult*multiplier*(floor(base+myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
+		dmg_expr = "ceil(el_mult*multiplier*((base+floor(myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
 	}
 	else
 	{
-		dmg_expr = "ceil(el_mult*multiplier*min(cap,floor(base+myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
+		dmg_expr = "ceil(el_mult*multiplier*min(cap,(base+floor(myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
 		vars["cap"] = spell.cap;
 	}
 	vars["multiplier"] = 1 + numeric_modifier("spell damage percent")/100;
