@@ -261,7 +261,7 @@ float dmg_eval(string expr, float[string] vars)
 			case "WEAPON_MULT":
 				m.append_replacement(b, (numeric_modifier("Weapon Damage Percent")/100).to_string());
 				break;
-			ase "RANGED_MULT":
+			case "RANGED_MULT":
 				m.append_replacement(b, (numeric_modifier("Ranged Damage Percent")/100).to_string());
 				break;
 			case "SPELL_MULT":
