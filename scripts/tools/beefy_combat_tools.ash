@@ -10,7 +10,7 @@ script "beefy_combat_tools.ash";
 	{
 		skill sk;
 		int cap;
-		float groupmax;
+		int groupmax;
 
 		int [element] min_damage;
 		int [element] max_damage;
