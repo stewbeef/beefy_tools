@@ -446,18 +446,26 @@ float damage_dealt(skill spell)
 		return best_spells(last_monster(), true);
 	}
 
-	void print_best_spells(monster mon)
+	void print_best_spells(monster mon, boolean have_only)
 	{
 		print("monster is: " +  mon.to_string());
-		skdmg [int] bs = best_spells(mon);
+		skdmg [int] bs = best_spells(mon, have_only);
 		foreach num in bs
 		{
 			print_html("%s has damage %s, ttd %s, mana used %s, dmg_taken %s",string [int] {to_string(bs[num].sk),to_string(bs[num].dmg),to_string(bs[num].ttd),to_string(bs[num].tmtw),to_string(bs[num].dmg_taken)});
 		}
 	}
+	void print_best_spells(boolean have_only)
+	{
+		print_best_spells(last_monster(), have_only);
+	}
+	void print_best_spells(monster mon)
+	{
+		print_best_spells(mon, true);
+	}
 	void print_best_spells()
 	{
-		print_best_spells(last_monster());
+		print_best_spells(last_monster(), true);
 	}
 
 void beefy_combat_tools_parse(string command)
