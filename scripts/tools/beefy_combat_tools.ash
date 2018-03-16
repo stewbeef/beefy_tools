@@ -9,11 +9,11 @@ script "beefy_combat_tools.ash";
 	record combat_spell
 	{
 		skill sk;
-		float cap;
+		int cap;
 		float groupmax;
 
-		float [element] min_damage;
-		float [element] max_damage;
+		int [element] min_damage;
+		int [element] max_damage;
 		float [stat] boost;
 		boolean [string] props;
 		float [string] dmg_props;
@@ -40,7 +40,7 @@ script "beefy_combat_tools.ash";
 		1,
 		float [element]  {$element[hot] : 2},
 		float [element]  {$element[hot] : 3},
-		float [stat] {$stat[mysticality] : 0},
+		float [stat] {$stat[mysticality] : 0.0},
 		boolean [string] {"sauce" = true}
 		);
 	/*
@@ -390,13 +390,17 @@ float damage_dealt(skill spell)
 //////////////////////////////////
 //Skill Picking
 
-	skdmg [int] best_spells(monster mon)
+	skdmg [int] best_spells(monster mon, boolean have_only)
 	{
 		float mp_regen = (numeric_modifier("mp regen min") + numeric_modifier("mp regen max"))/2;
 		boolean [skill] choices;
 		foreach num in spell_skills
 		{
-			if(have_skill(spell_skills[num]))
+			if(have_skill(spell_skills[num]) && have_only)
+			{
+				choices[spell_skills[num]] = true;
+			}
+			else if (!have_only)
 			{
 				choices[spell_skills[num]] = true;
 			}
@@ -428,9 +432,17 @@ float damage_dealt(skill spell)
 		sort spellranks by value.tmtw;
 		return spellranks;
 	}
+	skdmg [int] best_spells(monster mon, boolean have_only)
+	{
+		return best_spells(mon, true);
+	}
+	skdmg [int] best_spells(boolean have_only)
+	{
+		return best_spells(last_monster(), have_only);
+	}
 	skdmg [int] best_spells()
 	{
-		return best_spells(last_monster());
+		return best_spells(last_monster(), true);
 	}
 
 	void print_best_spells(monster mon)
