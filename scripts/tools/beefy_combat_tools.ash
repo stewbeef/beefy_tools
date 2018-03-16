@@ -487,5 +487,5 @@ void beefy_combat_tools_parse(string command)
 
 void main(string command)
 {
-	beefy_combat_tools_parse(command)
+	beefy_combat_tools_parse(command);
 }
