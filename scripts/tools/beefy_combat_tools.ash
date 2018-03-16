@@ -41,7 +41,7 @@ script "beefy_combat_tools.ash";
 		int [element]  {$element[hot] : 2},
 		int [element]  {$element[hot] : 3},
 		float [stat] {$stat[mysticality] : 0.0},
-		boolean [string] {"sauce" = true}
+		boolean [string] {"sauce" : true}
 		);
 	/*
 	cmbt_spells[to_skill("Salsaball")].sk = to_skill("Salsaball");
