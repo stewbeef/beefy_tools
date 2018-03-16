@@ -235,18 +235,33 @@ import "beefy_tools.ash";
 
 float dmg_eval(string expr, float[string] vars)
 {
-   buffer b;
-   matcher m = create_matcher( "\\b[a-z_][a-zA-Z0-9_]*\\b", expr );
-   while (m.find()) {
-      string var = m.group(0);
-      if (vars contains var) {
-         m.append_replacement(b, vars[var].to_string());
-      }
-      // could implement functions, pref access, etc. here
-   }
-   m.append_tail(b);
-   print(b.to_string());
-   return modifier_eval(b.to_string());
+	buffer b;
+	matcher m = create_matcher( "\\b[a-z_][a-zA-Z0-9_]*\\b", expr );
+	while (m.find()) {
+		string var = m.group(0);
+		switch (m.group(0))
+		{
+			case "MUS":
+				m.append_replacement(b, my_buffedstat($stat[muscle]).to_string());
+			break;
+			case "MYS":
+				m.append_replacement(b, my_buffedstat($stat[mysticality]).to_string());
+			break;
+			case "MOX":
+				m.append_replacement(b, my_buffedstat($stat[moxie]).to_string());
+			break;
+			default:
+				if (vars contains var)
+				{
+					m.append_replacement(b, vars[var].to_string());
+				}
+			break;
+		}
+		// could implement functions, pref access, etc. here
+	}
+	m.append_tail(b);
+	print(b.to_string());
+	return modifier_eval(b.to_string());
 }
 
 float el_damage_dealt(combat_spell spell, float min, float max, element el, monster mon)
