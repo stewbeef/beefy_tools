@@ -739,6 +739,16 @@ void beefy_combat_tools_parse(string command)
 					print_best_skills("",arry[1].to_monster(),false);
 				break;
 			}
+		case "allhave":
+			switch(arry.count())
+			{
+				case 1:
+					print_best_skills("");
+				break;
+				case 2:
+					print_best_skills("",arry[1].to_monster());
+				break;
+			}
 		break;
 		case "attack":
 			switch(arry.count())
