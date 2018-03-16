@@ -10,11 +10,10 @@ import "beefy_tools.ash";
 	record combat_spell
 	{
 		skill sk;
-		int cap;
-		int groupmax;
-
 		int [element] min_damage;
 		int [element] max_damage;
+		int cap;
+		int groupmax;		
 		float [stat] boost;
 		boolean [string] props;
 		float [string] dmg_props;
@@ -37,10 +36,10 @@ import "beefy_tools.ash";
 
 	cmbt_spells[to_skill("Salsaball")] = new combat_spell(
 		to_skill("Salsaball"),
-		8,
-		1,
 		int [element]  {$element[hot] : 2},
 		int [element]  {$element[hot] : 3},
+		8,
+		1,
 		float [stat] {$stat[mysticality] : 0.0},
 		boolean [string] {"sauce" : true}
 		);
@@ -51,6 +50,15 @@ import "beefy_tools.ash";
 	cmbt_spells[to_skill("Salsaball")].boost[$stat[mysticality]] = 0.0;
 	cmbt_spells[to_skill("Salsaball")].props["sauce"] = true;
 	*/
+	cmbt_spells[to_skill("Stream of Sauce")] = new combat_spell(
+		to_skill("Stream of Sauce"),
+		int [element]  {$element[hot] : 9},
+		int [element]  {$element[hot] : 11},
+		24,
+		1,
+		float [stat] {$stat[mysticality] : 0.0},
+		boolean [string] {"sauce" : true}
+		);
 	cmbt_spells[to_skill("Stream of Sauce")] = new combat_spell();
 	cmbt_spells[to_skill("Stream of Sauce")].sk = to_skill("Stream of Sauce");
 	cmbt_spells[to_skill("Stream of Sauce")].min_damage[$element[hot]] = 9;
@@ -187,7 +195,7 @@ import "beefy_tools.ash";
 	cmbt_spells[to_skill("Stuffed Mortar Shell")].max_damage[$element[none]] = 64;
 	cmbt_spells[to_skill("Stuffed Mortar Shell")].groupmax = 3;
 	cmbt_spells[to_skill("Stuffed Mortar Shell")].boost[$stat[mysticality]] = 0.5;
-	cmbt_spells[to_skill("Stuffed Mortar Shell")].cap = 0;
+	cmbt_spells[to_skill("Stuffed Mortar Shell")].cap = -1;
 	cmbt_spells[to_skill("Stuffed Mortar Shell")].props["pasta random"] = true;
 	cmbt_spells[to_skill("Stuffed Mortar Shell")].props["pasta"] = true;
 
@@ -242,13 +250,13 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 {
 	string dmg_expr;
 	float [string] vars;
-	if(spell.cap == 0)
+	if(spell.cap == -1)
 	{
-		dmg_expr = "ceil(el_mult*multiplier*floor(base*(1+myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage)";
+		dmg_expr = "ceil(el_mult*multiplier*(floor(base+myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
 	}
 	else
 	{
-		dmg_expr = "ceil(el_mult*multiplier*min(cap,floor(base*(1+myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
+		dmg_expr = "ceil(el_mult*multiplier*min(cap,floor(base+myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
 		vars["cap"] = spell.cap;
 	}
 	vars["multiplier"] = 1 + numeric_modifier("spell damage percent")/100;
@@ -473,7 +481,7 @@ void beefy_combat_tools_parse(string command)
 	string [int] arry = command.split_string(",");
 	switch (arry[0])
 	{
-		case "all spell":
+		case "all spells":
 			switch(arry.count())
 			{
 				case 1:
@@ -498,7 +506,7 @@ void beefy_combat_tools_parse(string command)
 		break;
 		case "attack":
 		break;
-		case "all attack":
+		case "all attacks":
 		break;
 		default:
 		break;
