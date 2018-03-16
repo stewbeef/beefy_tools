@@ -8,6 +8,9 @@ import "beefy_tools.ash";
 	//Spells
 	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA+1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
 	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+
+	string weapon_dmg = "(min(floor(WEAPON_STAT*ATTK_TYPE_STAT_MOD*WPN_TYPE_STAT_MOD)-MONDEF,0)+(max(1,WEAPON_DMG)*CRIT*ATK_TYPE_WPN_DMG_MOD)+BONUS_WEAPON_DAMAGE)*(1+WEAPON_MULT)+OFFHAND+BONUS_ELEMENTAL_DAMAGE";
+
 	//skill() 0 1
 	//effect() 0 1
 	//class() 0 1
@@ -16,14 +19,23 @@ import "beefy_tools.ash";
 	//SPELL_GROUP spell group size
 	//CAP spell damage cap
 	//MYST_SCALING mysticality scaling
-	//CRIT crit chance
 	//BONUS_SPELL_DAMAGE bonus spell damage
 	//BONUS_ELEMENTAL_DAMAGE bonus elemental damage
 	//SPELL_CRIT Spell Critical Percent
 	//CRIT Critical Hit Percent
 	//SPELL_MULT spell percent damage
+	//WEAPON_MULT -- weapon damage mult - includes ranged
 	//PASTA 0 or 1 if pasta spell
-	record combat_spell
+	//OFFHAND - offhand weapon damage
+	//WEAPON_DMG - weapon damage
+	//BONUS_WEAPON_DAMAGE - bonus weapon damage
+	//ATTK_TYPE_STAT_MOD - 1.25 non-seal clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
+	//WPN_TYPE_STAT_MOD - 1 for melee, .75 range, .25 no weapon
+	//ATK_TYPE_WPN_DMG_MOD - 2 for thrust-smack/mighty axing, 3 for lunging-thrust-smack/northern explosion
+	//		5 for bashing slam smash, 5 for cleave, 1 otherwise
+	//BONUS_WEAPON_DMG includes ranged damage for ranged weapon
+
+	record combat_skill
 	{
 		skill sk;
 		string dmg_exp;
@@ -41,166 +53,185 @@ import "beefy_tools.ash";
 		int dmg_taken; //expected_damage from monster
 	};
 
-	combat_spell [skill] cmbt_spells;
+	combat_skill [skill] cmbt_skills;
 	skill [int] spell_skills = {to_skill("Salsaball"),to_skill("Stream of Sauce"),to_skill("Surge of Icing"),to_skill("Saucestorm"),to_skill(4023),to_skill("Wave of Sauce"),to_skill("Saucecicle"),to_skill("Saucegeyser"),to_skill("Saucemageddon"),to_skill("Spaghetti Spear"),to_skill("Ravioli Shurikens"),to_skill("Candyblast"),to_skill("Cannelloni Cannon"),to_skill("Stringozzi Serpent"),to_skill("Stuffed Mortar Shell"),to_skill("Weapon of the Pastalord"),to_skill("Fearful Fettucini")};
 	boolean [skill] sk_cast_once;
 	sk_cast_once[to_skill("Stuffed Mortar Shell")] = true;
 //Saucerer
-	cmbt_spells[to_skill("Salsaball")] = new combat_spell(
+	cmbt_skills[to_skill("Salsaball")] = new combat_skill(
 		to_skill("Salsaball"),
 		capped_spell_dmg,
 		int [element]  {$element[hot] : 2},
 		int [element]  {$element[hot] : 3},
-		float [string] {"MYST_SCALING" : 0.0, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
+		float [string] {"MYST_SCALING" : 0.0, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0},
+		boolean [string] {"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Stream of Sauce")] = new combat_spell(
+	cmbt_skills[to_skill("Stream of Sauce")] = new combat_skill(
 		to_skill("Stream of Sauce"),
 		capped_spell_dmg,
 		int [element]  {$element[hot] : 9},
 		int [element]  {$element[hot] : 11},
-		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0},
+		boolean [string] {"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Surge of Icing")] = new combat_spell(
+	cmbt_skills[to_skill("Surge of Icing")] = new combat_skill(
 		to_skill("Surge of Icing"),
 		capped_spell_dmg,
 		int [element]  {$element[none] : 14},
 		int [element]  {$element[none] : 18},
-		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0},
+		boolean [string] {"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Saucestorm")] = new combat_spell(
+	cmbt_skills[to_skill("Saucestorm")] = new combat_skill(
 		to_skill("Saucestorm"),
 		capped_spell_dmg,
 		int [element]  {$element[hot] : 20,$element[cold] : 20},
 		int [element]  {$element[hot] : 24,$element[cold] : 24},
-		float [string] {"MYST_SCALING" : 0.2, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "SAUCE" : 1.0}
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "SAUCE" : 1.0},
+		boolean [string] {"spell" : true}
 		);
 
 		//Käsesoßesturm
-	cmbt_spells[to_skill(4023)] = new combat_spell(
+	cmbt_skills[to_skill(4023)] = new combat_skill(
 		to_skill("4023"),
 		capped_spell_dmg,
 		int [element]  {$element[stench] : 40},
 		int [element]  {$element[stench] : 44},
-		float [string] {"MYST_SCALING" : 0.3, "CAP" : 2100.0, "SPELL_GROUP" : 5.0, "SAUCE" : 1.0}
+		float [string] {"MYST_SCALING" : 0.3, "CAP" : 2100.0, "SPELL_GROUP" : 5.0, "SAUCE" : 1.0},
+		boolean [string] {"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Wave of Sauce")] = new combat_spell(
+	cmbt_skills[to_skill("Wave of Sauce")] = new combat_skill(
 		to_skill("Wave of Sauce"),
 		capped_spell_dmg,
 		int [element]  {$element[hot] : 45},
 		int [element]  {$element[hot] : 50},
-		float [string] {"MYST_SCALING" : 0.3, "CAP" : 100.0, "SPELL_GROUP" : 2.0, "SAUCE" : 1.0}
+		float [string] {"MYST_SCALING" : 0.3, "CAP" : 100.0, "SPELL_GROUP" : 2.0, "SAUCE" : 1.0},
+		boolean [string] {"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Saucecicle")] = new combat_spell(
+	cmbt_skills[to_skill("Saucecicle")] = new combat_skill(
 		to_skill("Saucecicle"),
 		capped_spell_dmg,
 		int [element]  {$element[cold] : 45},
 		int [element]  {$element[cold] : 50},
-		float [string] {"MYST_SCALING" : 0.4, "CAP" : 150.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0}
+		float [string] {"MYST_SCALING" : 0.4, "CAP" : 150.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0},
+		boolean [string] {"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Saucegeyser")] = new combat_spell(
+	cmbt_skills[to_skill("Saucegeyser")] = new combat_skill(
 		to_skill("Saucegeyser"),
 		uncapped_spell_dmg,
 		int [element]  {$element[hot] : 60,$element[cold] : 60},
 		int [element]  {$element[hot] : 70,$element[cold] : 70},
 		float [string] {"MYST_SCALING" : 0.4, "SPELL_GROUP" : 3.0, "SAUCE" : 1.0},
-		boolean [string] {"best" : true}
+		boolean [string] {"spell" : true,"best" : true}
 		);
 
-	cmbt_spells[to_skill("Saucemageddon")] = new combat_spell(
+	cmbt_skills[to_skill("Saucemageddon")] = new combat_skill(
 		to_skill("Saucemageddon"),
 		uncapped_spell_dmg,
 		int [element]  {$element[hot] : 80,$element[cold] : 80},
 		int [element]  {$element[hot] : 90,$element[cold] : 90},
 		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 5.0, "SAUCE" : 1.0},
-		boolean [string] {"best" : true}
+		boolean [string] {"spell" : true,"best" : true}
 		);
 
 //Pastamancer
-	cmbt_spells[to_skill("Spaghetti Spear")] = new combat_spell(
+	cmbt_skills[to_skill("Spaghetti Spear")] = new combat_skill(
 		to_skill("Spaghetti Spear"),
 		capped_spell_dmg,
 		int [element]  {$element[none] : 2},
 		int [element]  {$element[none] : 3},
-		float [string] {"MYST_SCALING" : 0.2, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0},
+		boolean [string] {"spell" : true}
 		);
 	
 
-	cmbt_spells[to_skill("Ravioli Shurikens")] = new combat_spell(
+	cmbt_skills[to_skill("Ravioli Shurikens")] = new combat_skill(
 		to_skill("Ravioli Shurikens"),
 		capped_spell_dmg,
 		int [element]  {$element[none] : 2},
 		int [element]  {$element[none] : 34},
 		float [string] {"MYST_SCALING" : 0.0, "CAP" : 10.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0, "repeat" : 2},
-		boolean [string] {"pasta random" : true}
+		boolean [string] {"pasta random" : true,"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Candyblast")] = new combat_spell(
+	cmbt_skills[to_skill("Candyblast")] = new combat_skill(
 		to_skill("Candyblast"),
 		capped_spell_dmg,
 		int [element]  {$element[none] : 8},
 		int [element]  {$element[none] : 16},
 		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
+		boolean [string] {"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Cannelloni Cannon")] = new combat_spell(
+	cmbt_skills[to_skill("Cannelloni Cannon")] = new combat_skill(
 		to_skill("Cannelloni Cannon"),
 		capped_spell_dmg,
 		int [element]  {$element[none] : 16},
 		int [element]  {$element[none] : 32},
 		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "PASTA" : 1.0},
-		boolean [string] {"pasta random" : true}
+		boolean [string] {"pasta random" : true,"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Stringozzi Serpent")] = new combat_spell(
+	cmbt_skills[to_skill("Stringozzi Serpent")] = new combat_skill(
 		to_skill("Stringozzi Serpent"),
 		capped_spell_dmg,
 		int [element]  {$element[none] : 16},
 		int [element]  {$element[none] : 32},
 		float [string] {"MYST_SCALING" : 0.25, "CAP" : 75.0, "SPELL_GROUP" : 2.0, "PASTA" : 1.0},
-		boolean [string] {"pasta random" : true}
+		boolean [string] {"pasta random" : true,"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Stuffed Mortar Shell")] = new combat_spell(
+	cmbt_skills[to_skill("Stuffed Mortar Shell")] = new combat_skill(
 		to_skill("Stuffed Mortar Shell"),
 		uncapped_spell_dmg,
 		int [element]  {$element[none] : 32},
 		int [element]  {$element[none] : 64},
 		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 3.0, "PASTA" : 1.0},
-		boolean [string] {"pasta random" : true}
+		boolean [string] {"pasta random" : true,"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Weapon of the Pastalord")] = new combat_spell(
+	cmbt_skills[to_skill("Weapon of the Pastalord")] = new combat_skill(
 		to_skill("Weapon of the Pastalord"),
 		uncapped_spell_dmg,
 		int [element]  {$element[none] : 32},
 		int [element]  {$element[none] : 64},
 		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
-		boolean [string] {"pastalord" : true}
+		boolean [string] {"pastalord" : true,"spell" : true}
 		);
 
-	cmbt_spells[to_skill("Fearful Fettucini")] = new combat_spell(
+	cmbt_skills[to_skill("Fearful Fettucini")] = new combat_skill(
 		to_skill("Fearful Fettucini"),
 		uncapped_spell_dmg,
 		int [element]  {$element[spooky] : 32},
 		int [element]  {$element[spooky] : 64},
 		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
+		boolean [string] {"spell" : true}
 		);
-	//////////////////////////////////
-	//Combat skills
-	record melee_skill
-	{
-		boolean [string] props;
-		string [element] min_damage;
-		string [element] max_damage;
-		float [stat] boost;
-	};
 
+	cmbt_skills[to_skill("none")] = new combat_skill(
+		to_skill("none"),
+		weapon_dmg,
+		int [element]  {},
+		int [element]  {},
+		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 1}
+		boolean [string] {"attack" : true}
+		);
+	/*
+	cmbt_skills[to_skill("none")] = new combat_skill(
+		to_skill("none"),
+		weapon_dmg,
+		int [element]  {},
+		int [element]  {},
+		float [string] {}
+		boolean [string] {"attack" : true}
+		);
+*/
 
 
 //////////////////////////////////
@@ -216,15 +247,21 @@ float dmg_eval(string expr, float[string] vars)
 	//SPELL_GROUP spell group size
 	//CAP spell damage cap
 	//MYST_SCALING mysticality scaling
-	//CRIT crit chance
 	//BONUS_SPELL_DAMAGE bonus spell damage
 	//BONUS_ELEMENTAL_DAMAGE bonus elemental damage
 	//SPELL_CRIT Spell Critical Percent
 	//CRIT Critical Hit Percent
 	//SPELL_MULT spell percent damage
-	//WEAPON_MULT weapon damage percent
-	//RANGED_MULT Ranged Weapon damage percent
-	//WEAPON_DAMAGE Weapon Damage  
+	//WEAPON_MULT -- weapon damage mult - includes ranged
+	//PASTA 0 or 1 if pasta spell
+	//OFFHAND - offhand weapon damage
+	//WEAPON_DMG - weapon damage
+	//BONUS_WEAPON_DAMAGE - bonus weapon damage
+	//ATTK_TYPE_STAT_MOD - 1.25 non-seal clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
+	//WPN_TYPE_STAT_MOD - 1 for melee, .75 range, .25 no weapon
+	//ATK_TYPE_WPN_DMG_MOD - 2 for thrust-smack/mighty axing, 3 for lunging-thrust-smack/northern explosion
+	//		5 for bashing slam smash, 5 for cleave, 1 otherwise
+	//BONUS_WEAPON_DMG includes ranged damage for ranged weapon  
 	buffer b;
 	matcher m = create_matcher( "\\b[a-zA-Z0-9_]*\\b", expr );
 	while (m.find()) {
@@ -240,27 +277,91 @@ float dmg_eval(string expr, float[string] vars)
 			case "MOX":
 				m.append_replacement(b, my_buffedstat($stat[moxie]).to_string());
 			break;
+			case "WEAPON_DMG":
+				m.append_replacement(b, to_float(equipped_item($slot[weapon]).get_power())*.15.to_string());
+			break;
+			case "OFFHAND":
+				if(weapon_type(equipped_item($slot[off-hand])) -= $stat[none])
+				{
+					m.append_replacement(b, (0.0).to_string());
+				}
+				else
+				{
+					m.append_replacement(b, to_float(equipped_item($slot[off-hand]).get_power())*.15.to_string());
+				}
+			break;
+			case "WPN_TYPE_STAT_MOD":
+				if(weapon_type(equipped_item($slot[weapon])) == $stat[moxie])
+				{
+					m.append_replacement(b, (0.75).to_string());
+				}
+				else if (equipped_item($slot[weapon]) == $item[none])
+				{
+					m.append_replacement(b, (0.25).to_string());
+				}
+				else
+				{
+					m.append_replacement(b, (1).to_string());
+				}
+			break;
 			case "BONUS_SPELL_DAMAGE":
 				m.append_replacement(b, numeric_modifier("Spell Damage").to_string());
-				break;
-			case "WEAPON_DAMAGE":
-				m.append_replacement(b, numeric_modifier("Weapon Damage").to_string());
-				break;     
+			break;
+			case "BONUS_WEAPON_DAMAGE":
+				if(weapon_type(equipped_item($slot[weapon])) == $stat[moxie])
+				{
+					m.append_replacement(b, (numeric_modifier("Ranged Damage") + numeric_modifier("Weapon Damage")).to_string());
+				}
+				else
+				{
+					m.append_replacement(b, numeric_modifier("Weapon Damage").to_string());
+				}
+			break;     
 			case "SPELL_CRIT":
 				m.append_replacement(b, (numeric_modifier("Spell Critical Percent")/100).to_string());
-				break;
+			break;
 			case "CRIT":
 				m.append_replacement(b, (numeric_modifier("Critical Hit Percent")/100).to_string());
-				break;
+			break;
 			case "SPELL_MULT":
 				m.append_replacement(b, (numeric_modifier("spell damage percent")/100).to_string());
-				break;
+			break;
 			case "WEAPON_MULT":
-				m.append_replacement(b, (numeric_modifier("Weapon Damage Percent")/100).to_string());
-				break;
+				if(weapon_type(equipped_item($slot[weapon])) == $stat[moxie])
+				{
+					m.append_replacement(b, ((numeric_modifier("Ranged Damage Percent") + numeric_modifier("Weapon Damage Percent"))/100).to_string());
+				}
+				else
+				{
+					m.append_replacement(b, (numeric_modifier("Weapon Damage Percent")/100).to_string());
+				}
+			break;
 			case "RANGED_MULT":
 				m.append_replacement(b, (numeric_modifier("Ranged Damage Percent")/100).to_string());
-				break;
+			break;
+			case "COLD_DMG":
+				m.append_replacement(b, numeric_modifier("Cold Damage").to_string());
+			break;
+			case "HOT_DMG":
+				m.append_replacement(b, numeric_modifier("Hot Damage").to_string());
+			break;
+			case "SLEAZE_DMG":
+				m.append_replacement(b, numeric_modifier("Sleaze Damage").to_string());
+			break;
+			case "SPOOKY_DMG":
+				m.append_replacement(b, numeric_modifier("Spooky Damage").to_string());
+			break;
+			case "STENCH_DMG":
+				m.append_replacement(b, numeric_modifier("Stench Damage").to_string());
+			break;
+			case "BONUS_ELEMENTAL_DAMAGE":
+				m.append_replacement(b,
+				(numeric_modifier("Cold Damage")
+				+numeric_modifier("Hot Damage")
+				+numeric_modifier("Sleaze Damage")
+				+numeric_modifier("Spooky Damage")
+				+numeric_modifier("Stench Damage")).to_string());
+			break;
 			default:
 				if (vars contains var)
 				{
@@ -275,7 +376,7 @@ float dmg_eval(string expr, float[string] vars)
 	return modifier_eval(b.to_string());
 }
 
-float el_damage_dealt(combat_spell spell, float min, float max, element el, monster mon)
+float el_damage_dealt(combat_skill spell, float min, float max, element el, monster mon)
 {
 	print (spell.sk.to_string());
 	/*
@@ -388,7 +489,7 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 	return dmg_eval(spell.dmg_exp, vars);
 }
 
-float damage_dealt(combat_spell spell, monster mon)
+float damage_dealt(combat_skill spell, monster mon)
 {
 	float total_damage = 0;
 	int times = 1+ spell.dmg_props["repeat"];
@@ -418,17 +519,17 @@ float damage_dealt(combat_spell spell, monster mon)
 	}
 	return total_damage;
 }
-float damage_dealt(combat_spell spell)
+float damage_dealt(combat_skill spell)
 {
 	return damage_dealt(spell,last_monster());
 }
 float damage_dealt(skill spell, monster mon)
 {
-	return damage_dealt(cmbt_spells[spell],mon);
+	return damage_dealt(cmbt_skills[spell],mon);
 }
 float damage_dealt(skill spell)
 {
-	return damage_dealt(cmbt_spells[spell],last_monster());
+	return damage_dealt(cmbt_skills[spell],last_monster());
 }
 //////////////////////////////////
 //Skill Picking
