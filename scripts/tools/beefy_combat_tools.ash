@@ -6,6 +6,8 @@ import "beefy_tools.ash";
 
 	//////////////////////////////////
 	//Spells
+	string capped_spell_dmg = "";
+	string uncapped_spell_dmg = "";
 
 	record combat_spell
 	{
@@ -252,16 +254,16 @@ float el_damage_dealt(combat_spell spell, float min, float max, element el, mons
 	float [string] vars;
 	if(spell.cap == -1)
 	{
-		dmg_expr = "ceil(el_mult*multiplier*((base+floor(myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
+		dmg_expr = "ceil(el_mult*multiplier*((base+floor(MYS*myst_scale))*crit+bonus_spell_damage+bonus_elemental_damage))";
 	}
 	else
 	{
-		dmg_expr = "ceil(el_mult*multiplier*min(cap,(base+floor(myst_bonus))*crit+bonus_spell_damage+bonus_elemental_damage))";
+		dmg_expr = "ceil(el_mult*multiplier*min(cap,(base+floor(MYS*myst_scale))*crit+bonus_spell_damage+bonus_elemental_damage))";
 		vars["cap"] = spell.cap;
 	}
 	vars["multiplier"] = 1 + numeric_modifier("spell damage percent")/100;
 	vars["base"] = (max + min)/2;
-	vars["myst_bonus"] = spell.boost[$stat[mysticality]] * my_buffedstat($stat[mysticality]);
+	vars["myst_scale"] = spell.boost[$stat[mysticality]];
 	vars["crit"] = 1;
 	vars["bonus_spell_damage"] = numeric_modifier("spell damage");
 	switch(el)
