@@ -236,7 +236,7 @@ import "beefy_tools.ash";
 float dmg_eval(string expr, float[string] vars)
 {
 	buffer b;
-	matcher m = create_matcher( "\\b[a-z_][a-zA-Z0-9_]*\\b", expr );
+	matcher m = create_matcher( "\\b[a-zA-Z0-9_]*\\b", expr );
 	while (m.find()) {
 		string var = m.group(0);
 		switch (m.group(0))
