@@ -1,4 +1,5 @@
 script "beefy_combat_tools.ash";
+import "beefy_tools.ash";
 
 //////////////////////////////////
 //Global Variables
