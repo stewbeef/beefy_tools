@@ -6,8 +6,8 @@ import "beefy_tools.ash";
 
 	//////////////////////////////////
 	//Spells
-	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
-	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA + 1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA + 1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(base+floor(MYS*MYST_SCALING)*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
 	//skill() 0 1
 	//effect() 0 1
 	//class() 0 1
@@ -192,7 +192,7 @@ import "beefy_tools.ash";
 		uncapped_spell_dmg,
 		int [element]  {$element[spooky] : 32},
 		int [element]  {$element[spooky] : 64},
-		float [string] {"MYST_SCALING" : 0.5, "CAP" : 50.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
+		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
 		);
 	//////////////////////////////////
 	//Combat skills
