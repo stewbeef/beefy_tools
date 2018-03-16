@@ -462,7 +462,7 @@ float damage_dealt(skill spell)
 
 void beefy_combat_tools_parse(string command)
 {
-	string [int] arry = command.split_string(" ");
+	string [int] arry = command.split_string(",");
 	switch (arry[0])
 	{
 		case "spell":
