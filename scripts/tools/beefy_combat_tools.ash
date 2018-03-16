@@ -156,9 +156,6 @@ import "beefy_tools.ash";
 		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "PASTA" : 1.0},
 		boolean [string] {"pasta random" : true}
 		);
-	cmbt_spells[to_skill("Cannelloni Cannon")].props["pasta random"] = true;
-	cmbt_spells[to_skill("Cannelloni Cannon")].props["pasta"] = true;
-	cmbt_spells[to_skill("Cannelloni Cannon")].props["butr"] = true;
 
 	cmbt_spells[to_skill("Stringozzi Serpent")] = new combat_spell(
 		to_skill("Stringozzi Serpent"),
@@ -280,6 +277,7 @@ float dmg_eval(string expr, float[string] vars)
 
 float el_damage_dealt(combat_spell spell, float min, float max, element el, monster mon)
 {
+	print (spell.sk.to_string());
 	/*
 	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA+1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
 	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
