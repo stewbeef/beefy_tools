@@ -6,11 +6,67 @@ import "beefy_tools.ash";
 
 	//////////////////////////////////
 	//Spells
-	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA+1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
-	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE))";
+	string capped_cold_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+COLD_SPELL_DMG))";
+	string capped_hot_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+HOT_SPELL_DMG))";
+	string capped_sleaze_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SLEAZE_SPELL_DMG))";
+	string capped_spooky_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SPOOKY_SPELL_DMG))";
+	string capped_stench_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+STENCH_SPELL_DMG))";
+	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE))";
+	string uncapped_cold_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+COLD_SPELL_DMG))";
+	string uncapped_hot_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+HOT_SPELL_DMG))";
+	string uncapped_sleaze_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SLEAZE_SPELL_DMG))";
+	string uncapped_spooky_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SPOOKY_SPELL_DMG))";
+	string uncapped_stench_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+STENCH_SPELL_DMG))";
+	//Saucerer
+	string capped_sauce_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_sauce_cold_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+COLD_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_sauce_hot_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+HOT_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_sauce_sleaze_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SLEAZE_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_sauce_spooky_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SPOOKY_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_sauce_stench_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min(CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+STENCH_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_sauce_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_sauce_cold_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+COLD_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_sauce_hot_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+HOT_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_sauce_sleaze_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SLEAZE_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_sauce_spooky_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SPOOKY_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	string uncapped_sauce_stench_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+STENCH_SPELL_DMG+min(L,10)*skill(Intrinsic Spiciness)))";
+	//PM
+	string capped_pm_spell_dmg = "(ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(Pastamancer)*skill(Bringing Up the Rear)+1)*CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE)))";
+	string capped_pm_cold_spell_dmg = "PM_COLD*(ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(Pastamancer)*skill(Bringing Up the Rear)+1)*CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+COLD_SPELL_DMG)))";
+	string capped_pm_hot_spell_dmg = "PM_HOT*(ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(Pastamancer)*skill(Bringing Up the Rear)+1)*CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+HOT_SPELL_DMG)))";
+	string capped_pm_sleaze_spell_dmg = "PM_SLEAZE*(ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(Pastamancer)*skill(Bringing Up the Rear)+1)*CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SLEAZE_SPELL_DMG)))";
+	string capped_pm_spooky_spell_dmg = "PM_SPOOKY*(ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(Pastamancer)*skill(Bringing Up the Rear)+1)*CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SPOOKY_SPELL_DMG)))";
+	string capped_pm_stench_spell_dmg = "PM_STENCH*(ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(Pastamancer)*skill(Bringing Up the Rear)+1)*CAP,((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+STENCH_SPELL_DMG)))";
+	string [element] capped_pm_ele_spell_dmg = {$element[cold] : capped_pm_cold_spell_dmg,$element[hot] : capped_pm_hot_spell_dmg,$element[sleaze] : capped_pm_sleaze_spell_dmg,$element[spooky] : capped_pm_spooky_spell_dmg,$element[stench] : capped_pm_stench_spell_dmg};
+	string uncapped_pm_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE))";
+	string uncapped_pm_hot_spell_dmg = "PM_HOT*ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+COLD_SPELL_DMG))";
+	string uncapped_pm_cold_spell_dmg = "PM_COLD*ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+HOT_SPELL_DMG))";
+	string uncapped_pm_sleaze_spell_dmg = "PM_SLEAZE*ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SLEAZE_SPELL_DMG))";
+	string uncapped_pm_spooky_spell_dmg = "PM_SPOOKY*ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+SPOOKY_SPELL_DMG))";
+	string uncapped_pm_stench_spell_dmg = "PM_STENCH*ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*(((MAX_DMG+MIN_DMG)/2+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+STENCH_SPELL_DMG))";
+	string [element] uncapped_pm_ele_spell_dmg = {$element[cold] : uncapped_pm_cold_spell_dmg,$element[hot] : uncapped_pm_hot_spell_dmg,$element[sleaze] : uncapped_pm_sleaze_spell_dmg,$element[spooky] : uncapped_pm_spooky_spell_dmg,$element[stench] : uncapped_pm_stench_spell_dmg};
 
-	string weapon_dmg = "(min(floor(WEAPON_STAT*ATTK_TYPE_STAT_MOD*WPN_TYPE_STAT_MOD)-MONDEF,0)+(max(1,WEAPON_DMG)*CRIT*ATK_TYPE_WPN_DMG_MOD)+BONUS_WEAPON_DAMAGE)*(1+WEAPON_MULT)+OFFHAND+BONUS_ELEMENTAL_DAMAGE";
+	//Attacks
+	string hitchance = "min(1,max(AUTOHIT,(6+WEAPON_STAT-MONDEF)/11))";
+	string attack_non_ele_dmg = "((max(floor(WEAPON_STAT*WPN_TYPE_STAT_MOD)-MONDEF,0)+(max(1,WEAPON_DMG)*CRIT)+BONUS_WEAPON_DAMAGE)*(1+WEAPON_MULT)+OFFHAND)";
+	string [element] attack_damage = {
+		$element[none] : hitchance + "*" + attack_non_ele_dmg, 
+		$element[cold] : hitchance + "*COLD_DMG", 
+		$element[hot] : hitchance + "*HOT_DMG", 
+		$element[sleaze] : hitchance + "*SLEAZE_DMG", 
+		$element[spooky] : hitchance + "*SPOOKY_DMG", 
+		$element[stench] : hitchance + "*STENCH_DMG"};
 
+	string smackhitchance = "min(1,max(class(Seal Clubber)," + hitchance + "))";
+	string attack_non_ele_smack_dmg = "(max(floor(WEAPON_STAT*ATTK_TYPE_STAT_MOD*WPN_TYPE_STAT_MOD)-MONDEF,0)+(max(1,WEAPON_DMG)*CRIT*ATK_TYPE_WPN_DMG_MOD)+BONUS_WEAPON_DAMAGE*(max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber)))*(1+WEAPON_MULT)+OFFHAND)";
+	string [element] smack_damage = {
+		$element[none] : smackhitchance + "*" + attack_non_ele_smack_dmg,
+		$element[cold] : smackhitchance + "*(COLD_DMG*max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber)+5*skill(cold shoulder)))",
+		$element[hot] : smackhitchance + "*HOT_DMG*max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber))",
+		$element[sleaze] : smackhitchance + "*SLEAZE_DMG*max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber))",
+		$element[spooky] : smackhitchance + "*SPOOKY_DMG*max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber))",
+		$element[stench] : smackhitchance + "*STENCH_DMG*max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber))"};
 	//skill() 0 1
 	//effect() 0 1
 	//class() 0 1
@@ -29,7 +85,7 @@ import "beefy_tools.ash";
 	//OFFHAND - offhand weapon damage
 	//WEAPON_DMG - weapon damage
 	//BONUS_WEAPON_DAMAGE - bonus weapon damage
-	//ATTK_TYPE_STAT_MOD - 1.25 non-seal clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
+	//ATTK_TYPE_STAT_MOD - 1.25 non-Seal Clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
 	//WPN_TYPE_STAT_MOD - 1 for melee, .75 range, .25 no weapon
 	//ATK_TYPE_WPN_DMG_MOD - 2 for thrust-smack/mighty axing, 3 for lunging-thrust-smack/northern explosion
 	//		5 for bashing slam smash, 5 for cleave, 1 otherwise
@@ -38,231 +94,273 @@ import "beefy_tools.ash";
 	record combat_skill
 	{
 		skill sk;
-		string dmg_exp;
-		int [element] min_damage;
-		int [element] max_damage;
+		string [element] damage;
 		float [string] dmg_props;
-		boolean [string] props;		
+		boolean [string] props;
+		string [element] dot;
 	};
 	record skdmg
 	{
 		skill sk;
+		combat_skill cmbtsk;
 		float dmg; //damage dealt per use
 		int ttd; // turns to death
 		int tmtw; //total mana to win
 		int dmg_taken; //expected_damage from monster
+		int order;
 	};
 
 	combat_skill [skill] cmbt_skills;
-	skill [int] spell_skills = {to_skill("Salsaball"),to_skill("Stream of Sauce"),to_skill("Surge of Icing"),to_skill("Saucestorm"),to_skill(4023),to_skill("Wave of Sauce"),to_skill("Saucecicle"),to_skill("Saucegeyser"),to_skill("Saucemageddon"),to_skill("Spaghetti Spear"),to_skill("Ravioli Shurikens"),to_skill("Candyblast"),to_skill("Cannelloni Cannon"),to_skill("Stringozzi Serpent"),to_skill("Stuffed Mortar Shell"),to_skill("Weapon of the Pastalord"),to_skill("Fearful Fettucini")};
-	boolean [skill] sk_cast_once;
-	sk_cast_once[to_skill("Stuffed Mortar Shell")] = true;
 //Saucerer
 	cmbt_skills[to_skill("Salsaball")] = new combat_skill(
 		to_skill("Salsaball"),
-		capped_spell_dmg,
-		int [element]  {$element[hot] : 2},
-		int [element]  {$element[hot] : 3},
-		float [string] {"MYST_SCALING" : 0.0, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0},
-		boolean [string] {"spell" : true}
+		string [element]  {$element[hot] : capped_sauce_hot_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.0, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "MIN_DMG" : 1.0, "MAX_DMG" : 3.0},
+		boolean [string] {"spell" : true, "sauce" : true}
 		);
 
 	cmbt_skills[to_skill("Stream of Sauce")] = new combat_skill(
 		to_skill("Stream of Sauce"),
-		capped_spell_dmg,
-		int [element]  {$element[hot] : 9},
-		int [element]  {$element[hot] : 11},
-		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0},
-		boolean [string] {"spell" : true}
+		string [element]  {$element[hot] : capped_sauce_hot_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "MIN_DMG" : 9.0, "MAX_DMG" : 11.0},
+		boolean [string] {"spell" : true, "sauce" : true}
 		);
 
 	cmbt_skills[to_skill("Surge of Icing")] = new combat_skill(
 		to_skill("Surge of Icing"),
-		capped_spell_dmg,
-		int [element]  {$element[none] : 14},
-		int [element]  {$element[none] : 18},
-		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0},
-		boolean [string] {"spell" : true}
+		string [element]  {$element[none] : capped_sauce_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 24.0, "SPELL_GROUP" : 1.0, "MIN_DMG" : 14.0, "MAX_DMG" : 18.0},
+		boolean [string] {"spell" : true, "sauce" : true}
 		);
 
 	cmbt_skills[to_skill("Saucestorm")] = new combat_skill(
 		to_skill("Saucestorm"),
-		capped_spell_dmg,
-		int [element]  {$element[hot] : 20,$element[cold] : 20},
-		int [element]  {$element[hot] : 24,$element[cold] : 24},
-		float [string] {"MYST_SCALING" : 0.2, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "SAUCE" : 1.0},
+		string [element]  {$element[hot] : capped_sauce_hot_spell_dmg,$element[cold] : capped_sauce_cold_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "MIN_DMG" : 20.0, "MAX_DMG" : 24.0},
 		boolean [string] {"spell" : true}
 		);
 
 		//Käsesoßesturm
 	cmbt_skills[to_skill(4023)] = new combat_skill(
 		to_skill("4023"),
-		capped_spell_dmg,
-		int [element]  {$element[stench] : 40},
-		int [element]  {$element[stench] : 44},
-		float [string] {"MYST_SCALING" : 0.3, "CAP" : 2100.0, "SPELL_GROUP" : 5.0, "SAUCE" : 1.0},
-		boolean [string] {"spell" : true}
+		string [element]  {$element[stench] : capped_sauce_stench_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.3, "CAP" : 100.0, "SPELL_GROUP" : 5.0, "MIN_DMG" : 40.0, "MAX_DMG" : 44.0},
+		boolean [string] {"spell" : true, "sauce" : true}
 		);
 
 	cmbt_skills[to_skill("Wave of Sauce")] = new combat_skill(
 		to_skill("Wave of Sauce"),
-		capped_spell_dmg,
-		int [element]  {$element[hot] : 45},
-		int [element]  {$element[hot] : 50},
-		float [string] {"MYST_SCALING" : 0.3, "CAP" : 100.0, "SPELL_GROUP" : 2.0, "SAUCE" : 1.0},
-		boolean [string] {"spell" : true}
+		string [element]  {$element[hot] : capped_sauce_hot_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.3, "CAP" : 100.0, "SPELL_GROUP" : 2.0, "MIN_DMG" : 45.0, "MAX_DMG" : 50.0},
+		boolean [string] {"spell" : true, "sauce" : true}
 		);
 
 	cmbt_skills[to_skill("Saucecicle")] = new combat_skill(
 		to_skill("Saucecicle"),
-		capped_spell_dmg,
-		int [element]  {$element[cold] : 45},
-		int [element]  {$element[cold] : 50},
-		float [string] {"MYST_SCALING" : 0.4, "CAP" : 150.0, "SPELL_GROUP" : 1.0, "SAUCE" : 1.0},
-		boolean [string] {"spell" : true}
+		string [element]  {$element[cold] : capped_sauce_cold_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.4, "CAP" : 150.0, "SPELL_GROUP" : 1.0, "MIN_DMG" : 45.0, "MAX_DMG" : 50.0},
+		boolean [string] {"spell" : true, "sauce" : true}
 		);
 
 	cmbt_skills[to_skill("Saucegeyser")] = new combat_skill(
 		to_skill("Saucegeyser"),
-		uncapped_spell_dmg,
-		int [element]  {$element[hot] : 60,$element[cold] : 60},
-		int [element]  {$element[hot] : 70,$element[cold] : 70},
-		float [string] {"MYST_SCALING" : 0.4, "SPELL_GROUP" : 3.0, "SAUCE" : 1.0},
-		boolean [string] {"spell" : true,"best" : true}
+		string [element]  {$element[hot] : uncapped_sauce_hot_spell_dmg,$element[cold] : uncapped_sauce_cold_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.4, "SPELL_GROUP" : 3.0, "MIN_DMG" : 60.0, "MAX_DMG" : 70.0},
+		boolean [string] {"spell" : true,"best" : true, "sauce" : true}
 		);
 
 	cmbt_skills[to_skill("Saucemageddon")] = new combat_skill(
 		to_skill("Saucemageddon"),
-		uncapped_spell_dmg,
-		int [element]  {$element[hot] : 80,$element[cold] : 80},
-		int [element]  {$element[hot] : 90,$element[cold] : 90},
-		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 5.0, "SAUCE" : 1.0},
-		boolean [string] {"spell" : true,"best" : true}
+		string [element]  {$element[hot] : uncapped_sauce_hot_spell_dmg,$element[cold] : uncapped_sauce_cold_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 5.0, "MIN_DMG" : 80.0, "MAX_DMG" : 90.0},
+		boolean [string] {"spell" : true,"best" : true, "sauce" : true}
 		);
 
 //Pastamancer
 	cmbt_skills[to_skill("Spaghetti Spear")] = new combat_skill(
 		to_skill("Spaghetti Spear"),
-		capped_spell_dmg,
-		int [element]  {$element[none] : 2},
-		int [element]  {$element[none] : 3},
-		float [string] {"MYST_SCALING" : 0.2, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0},
-		boolean [string] {"spell" : true}
+		string [element]  {$element[none] : capped_pm_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.2, "CAP" : 8.0, "SPELL_GROUP" : 1.0, "MIN_DMG" : 2.0, "MAX_DMG" : 3.0},
+		boolean [string] {"spell" : true, "pasta" : true}
 		);
 	
 
 	cmbt_skills[to_skill("Ravioli Shurikens")] = new combat_skill(
 		to_skill("Ravioli Shurikens"),
-		capped_spell_dmg,
-		int [element]  {$element[none] : 2},
-		int [element]  {$element[none] : 34},
-		float [string] {"MYST_SCALING" : 0.0, "CAP" : 10.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0, "repeat" : 2},
-		boolean [string] {"pasta random" : true,"spell" : true}
+		string [element]  {$element[cold] : "3*"+capped_pm_cold_spell_dmg,$element[hot] : "3*"+capped_pm_hot_spell_dmg,$element[sleaze] : "3*"+capped_pm_sleaze_spell_dmg,$element[spooky] : "3*"+capped_pm_spooky_spell_dmg,$element[stench] : "3*"+capped_pm_stench_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.0, "CAP" : 10.0, "SPELL_GROUP" : 1.0, "MIN_DMG" : 2.0, "MAX_DMG" : 4.0},
+		boolean [string] {"spell" : true, "pasta" : true}
 		);
 
 	cmbt_skills[to_skill("Candyblast")] = new combat_skill(
 		to_skill("Candyblast"),
-		capped_spell_dmg,
-		int [element]  {$element[none] : 8},
-		int [element]  {$element[none] : 16},
-		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
-		boolean [string] {"spell" : true}
+		string [element] {$element[none] : capped_pm_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 1.0, "MIN_DMG" : 8.0, "MAX_DMG" : 16.0}
+		boolean [string] {"spell" : true, "pasta" : true}
 		);
 
 	cmbt_skills[to_skill("Cannelloni Cannon")] = new combat_skill(
 		to_skill("Cannelloni Cannon"),
-		capped_spell_dmg,
-		int [element]  {$element[none] : 16},
-		int [element]  {$element[none] : 32},
-		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "PASTA" : 1.0},
-		boolean [string] {"pasta random" : true,"spell" : true}
+		capped_pm_ele_spell_dmg,
+		float [string] {"MYST_SCALING" : 0.25, "CAP" : 50.0, "SPELL_GROUP" : 2.0, "MIN_DMG" : 16.0, "MAX_DMG" : 32.0},
+		boolean [string] {"spell" : true, "pasta" : true}
 		);
 
 	cmbt_skills[to_skill("Stringozzi Serpent")] = new combat_skill(
 		to_skill("Stringozzi Serpent"),
-		capped_spell_dmg,
-		int [element]  {$element[none] : 16},
-		int [element]  {$element[none] : 32},
-		float [string] {"MYST_SCALING" : 0.25, "CAP" : 75.0, "SPELL_GROUP" : 2.0, "PASTA" : 1.0},
-		boolean [string] {"pasta random" : true,"spell" : true}
+		string [element]  {$element[none] : capped_pm_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.25, "CAP" : 75.0, "SPELL_GROUP" : 2.0, "MIN_DMG" : 16.0, "MAX_DMG" : 32.0},
+		boolean [string] {"spell" : true, "pasta" : true}
 		);
 
 	cmbt_skills[to_skill("Stuffed Mortar Shell")] = new combat_skill(
 		to_skill("Stuffed Mortar Shell"),
-		uncapped_spell_dmg,
-		int [element]  {$element[none] : 32},
-		int [element]  {$element[none] : 64},
-		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 3.0, "PASTA" : 1.0},
-		boolean [string] {"pasta random" : true,"spell" : true}
+		uncapped_pm_ele_spell_dmg,
+		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 3.0, "MIN_DMG" : 32.0, "MAX_DMG" : 64.0},
+		boolean [string] {"spell" : true, "once" : true, "pasta" : true}
 		);
 
 	cmbt_skills[to_skill("Weapon of the Pastalord")] = new combat_skill(
 		to_skill("Weapon of the Pastalord"),
-		uncapped_spell_dmg,
-		int [element]  {$element[none] : 32},
-		int [element]  {$element[none] : 64},
-		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
-		boolean [string] {"pastalord" : true,"spell" : true}
+		string [element]  {$element[none] : uncapped_pm_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "MIN_DMG" : 32.0, "MAX_DMG" : 64.0}
+		boolean [string] {"pastalord" : true,"spell" : true, "pasta" : true}
 		);
 
 	cmbt_skills[to_skill("Fearful Fettucini")] = new combat_skill(
 		to_skill("Fearful Fettucini"),
-		uncapped_spell_dmg,
-		int [element]  {$element[spooky] : 32},
-		int [element]  {$element[spooky] : 64},
-		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "PASTA" : 1.0}
-		boolean [string] {"spell" : true}
+		string [element]  {$element[spooky] : uncapped_spooky_spell_dmg},
+		float [string] {"MYST_SCALING" : 0.5, "SPELL_GROUP" : 1.0, "MIN_DMG" : 32.0, "MAX_DMG" : 64.0}
+		boolean [string] {"spell" : true, "pasta" : true}
 		);
 
+//Attacks and Smacks
 	cmbt_skills[to_skill("none")] = new combat_skill(
 		to_skill("none"),
-		weapon_dmg,
-		int [element]  {},
-		int [element]  {},
+		attack_damage,
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 1}
 		boolean [string] {"attack" : true}
 		);
-	cmbt_skills[to_skill("Clobber")] = new combat_skill(
-		to_skill("none"),
-		"WEAPON_DMG+ceil(sqrt(BONUS_WEAPON_DAMAGE))+ceil(sqrt(COLD_DMG))+ceil(sqrt(HOT_DMG))+ceil(sqrt(SLEAZE_DMG))+ceil(sqrt(SPOOKY_DMG))+ceil(sqrt(STENCH_DMG))",
-		int [element]  {},
-		int [element]  {},
-		float [string] {}
-		boolean [string] {"base" : true}
-		);
 	cmbt_skills[to_skill("Lunge Smack")] = new combat_skill(
 		to_skill("Lunge Smack"),
-		weapon_dmg + "+5",
-		int [element]  {},
-		int [element]  {},
+		string [element]  {$element[none] : attack_non_ele_dmg+"+5", $element[cold] : "COLD_DMG", $element[hot] : "HOT_DMG", $element[sleaze] : "SLEAZE_DMG", $element[spooky] : "SPOOKY_DMG", $element[stench] : "STENCH_DMG"},
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 1}
 		boolean [string] {"attack" : true}
 		);
 	cmbt_skills[to_skill("Thrust-Smack")] = new combat_skill(
 		to_skill("Thrust-Smack"),
-		weapon_dmg,
-		int [element]  {},
-		int [element]  {},
+		smack_damage,
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 2}
 		boolean [string] {"attack" : true}
 		);
 	cmbt_skills[to_skill("Lunging Thrust-Smack")] = new combat_skill(
 		to_skill("Lunging Thrust-Smack"),
-		weapon_dmg,
-		int [element]  {},
-		int [element]  {},
+		smack_damage,
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1.25, "ATK_TYPE_WPN_DMG_MOD" : 3}
 		boolean [string] {"attack" : true}
 		);
 	cmbt_skills[to_skill("Northern Explosion")] = new combat_skill(
 		to_skill("Northern Explosion"),
-		weapon_dmg,
-		int [element]  {},
-		int [element]  {},
+		string [element]  {$element[cold] : attack_non_ele_dmg+"+COLD_DMG*ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber)"},
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1.3, "ATK_TYPE_WPN_DMG_MOD" : 3}
 		boolean [string] {"attack" : true}
 		);
 
+//TT Attacks
+	cmbt_skills[to_skill("Headbutt")] = new combat_skill(
+		to_skill("Headbutt"),
+			string [element] {
+		$element[none] : hitchance + "*((ANYWARSNAP+ANYSTORMTORT)*HAT_POWER/7.5+" + attack_non_ele_dmg + ")", 
+		$element[cold] : hitchance + "*COLD_DMG", 
+		$element[hot] : hitchance + "*HOT_DMG",
+		$element[sleaze] : hitchance + "*SLEAZE_DMG", 
+		$element[spooky] : hitchance + "*((ANYSHEWHOWAS*HAT_POWER/7.5)+SPOOKY_DMG)", 
+		$element[stench] : hitchance + "*STENCH_DMG"},
+		float [string] {}
+		boolean [string] {"attack" : true}
+		);
+
+	string kneebutt_hitchance = "min(1,max(AUTOHIT,(6+(WEAPON_STAT+min(20,2*L))-MONDEF)/11))";
+	cmbt_skills[to_skill("Kneebutt")] = new combat_skill(
+		to_skill("Kneebutt"),
+			string [element] {
+		$element[none] : kneebutt_hitchance + "*((2*(ANYWARSNAP+ANYSTORMTORT))*PANTS_POWER/7.5+" + attack_non_ele_dmg + ")", 
+		$element[cold] : kneebutt_hitchance + "*COLD_DMG", 
+		$element[hot] : kneebutt_hitchance + "*HOT_DMG", 
+		$element[sleaze] : kneebutt_hitchance + "*SLEAZE_DMG", 
+		$element[spooky] : kneebutt_hitchance + "*((ANYSHEWHOWAS*PANTS_POWER/7.5)+SPOOKY_DMG)", 
+		$element[stench] : kneebutt_hitchance + "*STENCH_DMG"},
+		float [string] {}
+		boolean [string] {"attack" : true}
+		);
+
+	cmbt_skills[to_skill("Spirit Snap")] = new combat_skill(
+		to_skill("Spirit Snap"),
+			string [element] {
+		$element[none] : ".10*MUS*NOTTBLESS+.3*WARSNAP*MUS+.4*GRANDWARSNAP*MUS+.5*GLORWARSNAP*MUS+.15*STORMTORT*MUS+.2*GRANDSTORMTORT*MUS+.25*GLORSTORMTORT*MUS",
+		$element[spooky] : ".25*SHEWHOWAS*MUS+.3*GRANDSHEWHOWAS*MUS+.35*GLORSHEWHOWAS*MUS"},
+		float [string] {}
+		boolean [string] {"once" : true}
+		);
+
+	cmbt_skills[to_skill("Shieldbutt")] = new combat_skill(
+		to_skill("Shieldbutt"),
+			string [element] {
+		$element[none] : "max(class(Turtle Tamer)," + hitchance + ")*(((1+skill(butts of steel))*(ANYWARSNAP+ANYSTORMTORT))*SHIELD_POWER*.15+" + attack_non_ele_dmg + ")", 
+		$element[cold] : "max(class(Turtle Tamer)," + hitchance + ")*COLD_DMG", 
+		$element[hot] : "max(class(Turtle Tamer)," + hitchance + ")*HOT_DMG", 
+		$element[sleaze] : "max(class(Turtle Tamer)," + hitchance + ")*SLEAZE_DMG", 
+		$element[spooky] : "max(class(Turtle Tamer)," + hitchance + ")*(((1+skill(butts of steel))*ANYSHEWHOWAS*SHIELD_POWER/7.5)+SPOOKY_DMG)", 
+		$element[stench] : "max(class(Turtle Tamer)," + hitchance + ")*STENCH_DMG"},
+		float [string] {}
+		boolean [string] {"attack" : true}
+		);
+
+//Non-spell Base Attacks
+	cmbt_skills[to_skill("Clobber")] = new combat_skill(
+		to_skill("Clobber"),
+		string [element]  {$element[none] : "WEAPON_DMG+ceil(sqrt(BONUS_WEAPON_DAMAGE))", $element[cold] : "ceil(sqrt(COLD_DMG))", $element[hot] : "ceil(sqrt(HOT_DMG))", $element[sleaze] : "ceil(sqrt(SLEAZE_DMG))", $element[spooky] : "ceil(sqrt(SPOOKY_DMG))", $element[stench] : "ceil(sqrt(STENCH_DMG))"},
+		float [string] {}
+		boolean [string] {"base" : true}
+		);
+
+	cmbt_skills[to_skill("Toss")] = new combat_skill(
+		to_skill("Toss"),
+		string [element]  {$element[none] : "min(W+3,10+floor(sqrt(W-7)))"},
+		float [string] {}
+		boolean [string] {"base" : true}
+		);
+
+//////////////////////////////////
+//Helper functions
+
+element PM_Element()
+{
+	if((have_effect(to_effect("Spirit of Wormwood")) > 0) || have_equipped(to_item(2494)))
+	{//Necrotelicomnicon 2494
+		return $element[spooky];
+	}
+	else if((have_effect(to_effect("Spirit of Cayenne")) > 0) || have_equipped(to_item(1547)))
+	{//Codex of Capsaicin Conjuration 1547
+		return $element[hot];
+	}
+	else if ((have_effect(to_effect("Spirit of Peppermint")) > 0) || have_equipped(to_item(1548)))
+	{//Gazpacho's Glacial Grimoire 1548
+		return $element[cold];
+	}
+	else if ((have_effect(to_effect("Spirit of Garlic")) > 0) || have_equipped(to_item(2495)))
+	{//Cookbook of the Damned 2495
+		return $element[stench];
+	}
+	else if ((have_effect(to_effect("Spirit of Bacon Grease")) > 0) || have_equipped(to_item(2496)))
+	{//Sinful Desires
+		return $element[sleaze];
+	}
+	else
+	{
+		return $element[none];
+	}
+}
 
 //////////////////////////////////
 //Spell damage
@@ -287,7 +385,7 @@ float dmg_eval(string expr, float[string] vars)
 	//OFFHAND - offhand weapon damage
 	//WEAPON_DMG - weapon damage
 	//BONUS_WEAPON_DAMAGE - bonus weapon damage
-	//ATTK_TYPE_STAT_MOD - 1.25 non-seal clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
+	//ATTK_TYPE_STAT_MOD - 1.25 non-Seal Clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
 	//WPN_TYPE_STAT_MOD - 1 for melee, .75 range, .25 no weapon
 	//ATK_TYPE_WPN_DMG_MOD - 2 for thrust-smack/mighty axing, 3 for lunging-thrust-smack/northern explosion
 	//		5 for bashing slam smash, 5 for cleave, 1 otherwise
@@ -295,7 +393,7 @@ float dmg_eval(string expr, float[string] vars)
 
 	//WEAPON_DMG - weapon damage
 	//BONUS_WEAPON_DAMAGE - bonus weapon damage
-	//ATTK_TYPE_STAT_MOD - 1.25 non-seal clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
+	//ATTK_TYPE_STAT_MOD - 1.25 non-Seal Clubber's lunging thrust-smack, 1.3, seal-clubber's lunging thrust-smack or northern explosion, 1.4 bashing slam smash, 1 otherwise
 	//WPN_TYPE_STAT_MOD - 1 for melee, .75 range, .25 no weapon
 	//ATK_TYPE_WPN_DMG_MOD - 2 for thrust-smack/mighty axing, 3 for lunging-thrust-smack/northern explosion
 	//		5 for bashing slam smash, 5 for cleave, 1 otherwise
@@ -345,6 +443,240 @@ float dmg_eval(string expr, float[string] vars)
 					m.append_replacement(b, "0");
 				}
 			break;
+			case "HAT_POWER":
+				m.append_replacement(b, to_float(equipped_item($slot[hat]).get_power()).to_string());
+			break;
+			case "PANTS_POWER":
+				m.append_replacement(b, to_float(equipped_item($slot[pants]).get_power()).to_string());
+			break;
+			case "SHIELD_POWER":
+				if(item_type(equipped_item($slot[off-hand])) == "shield")
+				{
+					m.append_replacement(b, to_float(equipped_item($slot[off-hand]).get_power()).to_string());
+				}
+				else
+				{
+					m.append_replacement(b, to_float(equipped_item($slot[off-hand]).get_power()).to_string());
+				}
+			break;
+			case "ANYWARSNAP":
+				if(have_effect(to_effect("Blessing of War Snapper")) > 0
+				|| have_effect(to_effect("Grand Blessing of War Snapper")) > 0
+				|| have_effect(to_effect("Glorious Blessing of War Snapper")) > 0
+				)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "WARSNAP":
+				if(have_effect(to_effect("Blessing of War Snapper")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "GRANDWARSNAP":
+				if(have_effect(to_effect("Grand Blessing of War Snapper")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "GLORWARSNAP":
+				if(have_effect(to_effect("Glorious Blessing of War Snapper")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "ANYSTORMTORT":
+				if(have_effect(to_effect("Blessing of Storm Tortoise")) > 0
+				|| have_effect(to_effect("Grand Blessing of Storm Tortoise")) > 0
+				|| have_effect(to_effect("Glorious Blessing of Storm Tortoise")) > 0
+				)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "STORMTORT":
+				if(have_effect(to_effect("Blessing of Storm Tortoise")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "GRANDSTORMTORT":
+				if(have_effect(to_effect("Grand Blessing of Storm Tortoise")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "GLORSTORMTORT":
+				if(have_effect(to_effect("Glorious Blessing of Storm Tortoise")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "ANYSHEWHOWAS":
+				if(have_effect(to_effect("Blessing of She-Who-Was")) > 0
+				|| have_effect(to_effect("Grand Blessing of She-Who-Was")) > 0
+				|| have_effect(to_effect("Glorious Blessing of She-Who-Was")) > 0
+				)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "SHEWHOWAS":
+				if(have_effect(to_effect("Blessing of She-Who-Was")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "GRANDSHEWHOWAS":
+				if(have_effect(to_effect("Grand Blessing of She-Who-Was")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "GLORSHEWHOWAS":
+				if(have_effect(to_effect("Glorious Blessing of She-Who-Was")) > 0)
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "NOTTBLESS":
+				if(have_effect(to_effect("Blessing of She-Who-Was")) > 0
+				|| have_effect(to_effect("Grand Blessing of She-Who-Was")) > 0
+				|| have_effect(to_effect("Glorious Blessing of She-Who-Was")) > 0
+				|| have_effect(to_effect("Blessing of Storm Tortoise")) > 0
+				|| have_effect(to_effect("Grand Blessing of Storm Tortoise")) > 0
+				|| have_effect(to_effect("Glorious Blessing of Storm Tortoise")) > 0
+				|| have_effect(to_effect("Blessing of War Snapper")) > 0
+				|| have_effect(to_effect("Grand Blessing of War Snapper")) > 0
+				|| have_effect(to_effect("Glorious Blessing of War Snapper")) > 0
+				)
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+			break;
+			case "PM_COLD":
+				if(PM_Element() == $element[cold])
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else if(PM_Element() == $element[none])
+				{
+					m.append_replacement(b, ".2".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "PM_HOT":
+				if(PM_Element() == $element[hot])
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else if(PM_Element() == $element[none])
+				{
+					m.append_replacement(b, ".2".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "PM_SLEAZE":
+				if(PM_Element() == $element[sleaze])
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else if(PM_Element() == $element[none])
+				{
+					m.append_replacement(b, ".2".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "PM_SPOOKY":
+				if(PM_Element() == $element[spooky])
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else if(PM_Element() == $element[none])
+				{
+					m.append_replacement(b, ".2".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
+			case "PM_STENCH":
+				if(PM_Element() == $element[stench])
+				{
+					m.append_replacement(b, "1".to_string());
+				}
+				else if(PM_Element() == $element[none])
+				{
+					m.append_replacement(b, ".2".to_string());
+				}
+				else
+				{
+					m.append_replacement(b, "0".to_string());
+				}
+			break;
 			case "WPN_TYPE_STAT_MOD":
 				if(weapon_type(equipped_item($slot[weapon])) == $stat[moxie])
 				{
@@ -361,6 +693,21 @@ float dmg_eval(string expr, float[string] vars)
 			break;
 			case "BONUS_SPELL_DAMAGE":
 				m.append_replacement(b, numeric_modifier("Spell Damage").to_string());
+			break;
+			case "COLD_SPELL_DMG":
+				m.append_replacement(b, numeric_modifier("Cold Damage").to_string());
+			break;
+			case "HOT_SPELL_DMG":
+				m.append_replacement(b, numeric_modifier("Hot Damage").to_string());
+			break;
+			case "SLEAZE_SPELL_DMG":
+				m.append_replacement(b, numeric_modifier("Sleaze Damage").to_string());
+			break;
+			case "SPOOKY_SPELL_DMG":
+				m.append_replacement(b, numeric_modifier("Spooky Damage").to_string());
+			break;
+			case "STENCH_SPELL_DMG":
+				m.append_replacement(b, numeric_modifier("Stench Damage").to_string());
 			break;
 			case "BONUS_WEAPON_DAMAGE":
 				if(weapon_type(equipped_item($slot[weapon])) == $stat[moxie])
@@ -389,6 +736,21 @@ float dmg_eval(string expr, float[string] vars)
 				else
 				{
 					m.append_replacement(b, (numeric_modifier("Weapon Damage Percent")/100).to_string());
+				}
+			break;
+			case "AUTOHIT":
+				if((have_effect(to_effect("chalked weapon")) > 0)
+				|| (have_effect(to_effect("comic violence")) > 0)
+				|| (have_effect(to_effect("Song of Battle")) > 0)
+				|| (have_equipped(to_item("thor's pliers")))
+				|| (have_equipped(to_item("red fox glove")))
+				)
+				{
+					m.append_replacement(b, "1");
+				}
+				else
+				{
+					m.append_replacement(b, "0");
 				}
 			break;
 			case "RANGED_MULT":
@@ -431,11 +793,11 @@ float dmg_eval(string expr, float[string] vars)
 	return modifier_eval(b.to_string());
 }
 
-float el_damage_dealt(combat_skill spell, float min, float max, element el, monster mon)
+float el_damage_dealt(combat_skill spell, element el, monster mon)
 {
 	//print (spell.sk.to_string());
 	/*
-	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(pastamancer)*skill(Bringing Up the Rear)*PASTA+1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
+	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(Pastamancer)*skill(Bringing Up the Rear)*PASTA+1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
 	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
 	*/
 	float [string] vars;
@@ -443,15 +805,6 @@ float el_damage_dealt(combat_skill spell, float min, float max, element el, mons
 	{
 		vars[var] = spell.dmg_props[var];
 	}
-	if(!(vars contains "SAUCE"))
-	{
-		vars["SAUCE"] = 0.0;
-	}
-	if(!(vars contains "PASTA"))
-	{
-		vars["PASTA"] = 0.0;
-	}
-	vars["base"] = (max + min)/2;
 	vars["MON_GROUP"] = 1; // to replace
 	vars["MONDEF"] = mon.monster_defense();
 	switch(el)
@@ -542,42 +895,22 @@ float el_damage_dealt(combat_skill spell, float min, float max, element el, mons
 			vars["EL_MULT"] = 1;
 		break;
 	}
-	return dmg_eval(spell.dmg_exp, vars);
+	return dmg_eval(spell.damage[el], vars);
 }
 
 float damage_dealt(combat_skill spell, monster mon)
 {
 	float total_damage = 0;
-	int times = 1+ spell.dmg_props["repeat"];
-	for i from 1 to times by 1
+	//print(spell.sk.to_string());
+	foreach el in spell.damage
 	{
-		if(spell.props["pasta random"] == true)
+		if(spell.props["best"] == true)
 		{
-			foreach el in $elements[hot, cold, sleaze, stench, spooky]
-			{
-				total_damage += el_damage_dealt(spell, spell.min_damage[$element[none]], spell.max_damage[$element[none]], el, mon) / 5;
-			}
-		}
-		else if (spell.props["best"] == true)
-		{
-			foreach el in spell.min_damage
-			{
-				total_damage = max(total_damage,el_damage_dealt(spell, spell.min_damage[el], spell.max_damage[el], el, mon));
-			}
+			total_damage = max(total_damage,el_damage_dealt(spell, el, mon));
 		}
 		else
 		{
-			if(spell.min_damage.count() == 0)
-			{
-				total_damage += el_damage_dealt(spell, 0, 0, $element[none], mon);
-			}
-			else
-			{
-				foreach el in spell.min_damage
-				{
-					total_damage += el_damage_dealt(spell, spell.min_damage[el], spell.max_damage[el], el, mon);
-				}
-			}
+			total_damage += el_damage_dealt(spell, el, mon);
 		}
 	}
 	return total_damage;
@@ -626,8 +959,10 @@ float damage_dealt(skill spell)
 		foreach sk in choices
 		{
 			skdmg myskdmg = new skdmg();
+			
 			myskdmg.dmg = damage_dealt(sk,mon);
 			myskdmg.sk = sk;
+			myskdmg.cmbtsk = cmbt_skills[sk];
 			myskdmg.ttd = ceil(mon.monster_hp()/ max(1,myskdmg.dmg));
 			myskdmg.tmtw = myskdmg.ttd * mp_cost(sk);
 			myskdmg.dmg_taken = mon.expected_damage() * myskdmg.ttd;
@@ -739,6 +1074,7 @@ void beefy_combat_tools_parse(string command)
 					print_best_skills("",arry[1].to_monster(),false);
 				break;
 			}
+		break;
 		case "allhave":
 			switch(arry.count())
 			{
