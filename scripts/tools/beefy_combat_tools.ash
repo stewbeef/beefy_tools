@@ -154,10 +154,11 @@ string min(string a, string b)
 		float hitchance;
 		float dmg; //damage dealt per use
 		float hitdmg; //damage * hitchance
-
 		float [element] eldmg; //damage per element inflicted per use
+		
 		float dotdmg; //dot inflicted per use -- assumes no stacking
 		float dothitdmg; //damage * hitchance
+		float [element] eldotdmg; //dot per element inflicted per use
 
 		int ttd; // turns to death
 		int tot_mana_used;
