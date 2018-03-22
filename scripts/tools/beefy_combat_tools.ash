@@ -1072,7 +1072,7 @@ skdmg attack_eval(combat_skill csk, monster mon)
 		}
 	}
 
-	result.hitchance = hit_eval(csk.hitchance);
+	result.hitchance = hit_eval(csk.hitchance, mon);
 	result.hitdmg = result.hitchance * result.dmg;
 	result.dothitdmg = result.hitchance * result.dotdmg;
 	result.sk = csk.sk;
