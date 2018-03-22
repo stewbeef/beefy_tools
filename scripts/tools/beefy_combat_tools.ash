@@ -1034,6 +1034,18 @@ float dmg_eval(combat_skill spell, element el, monster mon, boolean dot)
 	}
 	return damage;
 }
+float hit_eval(combat_skill csk, monster mon)
+{
+	float [string] vars;
+	foreach var in spell.dmg_props
+	{
+		vars[var] = spell.dmg_props[var];
+	}
+	vars["MON_GROUP"] = 1; // to replace
+	vars["MONDEF"] = mon.monster_defense();
+
+	float dmg_eval(csk.hitchance, vars);
+}
 
 skdmg attack_eval(combat_skill csk, monster mon)
 {
@@ -1068,7 +1080,7 @@ skdmg attack_eval(combat_skill csk, monster mon)
 		}
 	}
 
-	result.hitchance = dmg_eval(csk.hitchance);
+	result.hitchance = hit_eval(csk.hitchance);
 	result.hitdmg = result.hitchance * result.dmg;
 	result.dothitdmg = result.hitchance * result.dotdmg;
 	result.sk = csk.sk;
