@@ -428,6 +428,7 @@ string min(string a, string b)
 		float [string] {},
 		boolean [string] {"base" : true},
 		"1",
+		string [element]  {},
 		string [string]  {
 			"mon_defense" : "-1",
 			"mon_attack" : "-1"
