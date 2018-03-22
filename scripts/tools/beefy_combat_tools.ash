@@ -30,7 +30,7 @@ string max(string a, string b)
 	maxthis.append(a);
 	maxthis.append(",");
 	maxthis.append(b);
-	maxthis.append(")";
+	maxthis.append(")");
 
 	return maxthis.to_string();
 }
@@ -43,7 +43,7 @@ string min(string a, string b)
 	maxthis.append(a);
 	maxthis.append(",");
 	maxthis.append(b);
-	maxthis.append(")";
+	maxthis.append(")");
 
 	return maxthis.to_string();
 }
