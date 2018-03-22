@@ -22,7 +22,7 @@ string get_hitchance()
 	return get_hitchance("");
 }
 
-string max(string a, string b)
+string get_max(string a, string b)
 {
 	buffer maxthis;
 
@@ -35,7 +35,7 @@ string max(string a, string b)
 	return maxthis.to_string();
 }
 
-string min(string a, string b)
+string get_min(string a, string b)
 {
 	buffer maxthis;
 
@@ -93,7 +93,7 @@ string min(string a, string b)
 
 	//Attacks
 	string hitchance = get_hitchance();
-	string attack_non_ele_dmg = "((max(floor(WEAPON_STAT*WPN_TYPE_STAT_MOD)-MONDEF,0)+(max(1,WEAPON_DMG)*CRIT)+BONUS_WEAPON_DAMAGE)*(1+WEAPON_MULT)+OFFHAND)";
+	string attack_non_ele_dmg = "((max(floor(WEAPON_STAT*WPN_TYPE_STAT_MOD)-MONDEF,0)+(max(1,WEAPON_DMG)*(1+CRIT))+BONUS_WEAPON_DAMAGE)*(1+WEAPON_MULT)+OFFHAND)";
 	string [element] attack_damage = {
 		$element[none] : attack_non_ele_dmg, 
 		$element[cold] : "COLD_DMG", 
@@ -104,7 +104,7 @@ string min(string a, string b)
 
 	string smackautohit = "(class(Seal Clubber)*max(mainhand(club),skill(Iron Palm Technique)*mainhand(sword)))";
 	
-	string attack_non_ele_smack_dmg = "(max(floor(WEAPON_STAT*ATTK_TYPE_STAT_MOD*WPN_TYPE_STAT_MOD)-MONDEF,0)+(max(1,WEAPON_DMG)*CRIT*ATK_TYPE_WPN_DMG_MOD)+BONUS_WEAPON_DAMAGE*(max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber)))*(1+WEAPON_MULT)+OFFHAND)";
+	string attack_non_ele_smack_dmg = "(max(floor(WEAPON_STAT*ATTK_TYPE_STAT_MOD*WPN_TYPE_STAT_MOD)-MONDEF,0)+(max(1,WEAPON_DMG)*(1+CRIT)*ATK_TYPE_WPN_DMG_MOD)+BONUS_WEAPON_DAMAGE*(max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber)))*(1+WEAPON_MULT)+OFFHAND)";
 	string [element] smack_damage = {
 		$element[none] : attack_non_ele_smack_dmg,
 		$element[cold] : "(COLD_DMG*max(1,ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber)+5*skill(cold shoulder)))",
@@ -327,28 +327,28 @@ string min(string a, string b)
 		string [element]  {$element[none] : attack_non_ele_dmg+"+5", $element[cold] : "COLD_DMG", $element[hot] : "HOT_DMG", $element[sleaze] : "SLEAZE_DMG", $element[spooky] : "SPOOKY_DMG", $element[stench] : "STENCH_DMG"},
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 1},
 		boolean [string] {"attack" : true},
-		max(smackautohit,get_hitchance(""))
+		get_max(smackautohit,get_hitchance(""))
 		);
 	cmbt_skills[to_skill("Thrust-Smack")] = new combat_skill(
 		to_skill("Thrust-Smack"),
 		smack_damage,
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1, "ATK_TYPE_WPN_DMG_MOD" : 2},
 		boolean [string] {"attack" : true},
-		max(smackautohit,get_hitchance("+20"))
+		get_max(smackautohit,get_hitchance("+20"))
 		);
 	cmbt_skills[to_skill("Lunging Thrust-Smack")] = new combat_skill(
 		to_skill("Lunging Thrust-Smack"),
 		smack_damage,
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1.25, "ATK_TYPE_WPN_DMG_MOD" : 3},
 		boolean [string] {"attack" : true},
-		max(smackautohit,max(get_hitchance("+30"),get_hitchance("*max(class(Seal Clubber)*30,25)")))
+		get_max(smackautohit,get_max(get_hitchance("+30"),get_hitchance("*max(class(Seal Clubber)*30,25)")))
 		);
 	cmbt_skills[to_skill("Northern Explosion")] = new combat_skill(
 		to_skill("Northern Explosion"),
 		string [element]  {$element[cold] : attack_non_ele_dmg+"+COLD_DMG*ATK_TYPE_WPN_DMG_MOD*class(Seal Clubber)"},
 		float [string] {"ATTK_TYPE_STAT_MOD" : 1.3, "ATK_TYPE_WPN_DMG_MOD" : 3},
 		boolean [string] {"attack" : true},
-		max(smackautohit,get_hitchance(""))
+		get_max(smackautohit,get_hitchance(""))
 		);
 
 //TT Attacks
@@ -403,7 +403,7 @@ string min(string a, string b)
 	cmbt_skills[to_skill("Shieldbutt")] = new combat_skill(
 		to_skill("Shieldbutt"),
 		string [element] {
-			$element[none] : "(((1+skill(butts of steel))*SHIELD_POWER*.15+10*GRANDWARSNAP+20*GLORWARSNAP+" + attack_non_ele_dmg + ")", 
+			$element[none] : "((1+skill(butts of steel))*SHIELD_POWER*.15+10*GRANDWARSNAP+20*GLORWARSNAP+" + attack_non_ele_dmg + ")", 
 			$element[cold] : "COLD_DMG", 
 			$element[hot] : "HOT_DMG", 
 			$element[sleaze] : "SLEAZE_DMG", 
@@ -411,7 +411,7 @@ string min(string a, string b)
 			$element[stench] : "STENCH_DMG"},
 		float [string] {},
 		boolean [string] {"attack" : true},
-		max("class(Turtle Tamer)",hitchance),
+		get_max("class(Turtle Tamer)",hitchance),
 		string [element]  {
 			$element[none] : "((1+skill(butts of steel))*SHIELD_POWER*.15+5*GRANDSTORMTORT+10*GLORSTORMTORT+" + attack_non_ele_dmg + ")"
 			},
@@ -1018,11 +1018,11 @@ float dmg_eval(combat_skill csk, element el, monster mon, boolean dot)
 	float damage;
 	if(dot)
 	{
-		dmg_eval(csk.dot[el], vars);
+		damage = dmg_eval(csk.dot[el], vars);
 	}
 	else
 	{
-		dmg_eval(csk.damage[el], vars);
+		damage = dmg_eval(csk.damage[el], vars);
 	}
 	return damage;
 }
@@ -1046,15 +1046,16 @@ skdmg attack_eval(combat_skill csk, monster mon)
 	foreach el in csk.damage
 	{
 		float damage = dmg_eval(csk, el, mon, false);
+		//print(damage.to_string());
 		if(csk.props["best"] == true)
 		{
 			
 			result.dmg = max(result.dmg,damage);
-			result.eldmg[el] = damage;
 		}
 		else
 		{
 			result.dmg += damage;
+			result.eldmg[el] = damage;
 		}
 	}
 	foreach el in csk.dot
@@ -1064,35 +1065,36 @@ skdmg attack_eval(combat_skill csk, monster mon)
 		{
 			
 			result.dotdmg = max(result.dmg,damage);
-			result.eldotdmg[el] = damage;
+			
 		}
 		else
 		{
-			result.eldotdmg[el] += damage;
+			result.dotdmg += damage;
+			result.eldotdmg[el] = damage;
 		}
 	}
 
-	result.hitchance = hit_eval(csk.hitchance, mon);
+	result.hitchance = hit_eval(csk, mon);
 	result.hitdmg = result.hitchance * result.dmg;
 	result.dothitdmg = result.hitchance * result.dotdmg;
 	result.sk = csk.sk;
 	result.cmbtsk = csk;
-	result.ttd = ceil(mon.monster_hp()/ max(1,result.hitdmg));
+	result.ttd = ceil(mon.monster_hp() / max(1,result.hitdmg));
 	result.dmg_taken = mon.expected_damage() * result.ttd;
-	result.tot_mana_used = result.ttd * mp_cost(sk);
+	result.tot_mana_used = result.ttd * mp_cost(result.sk);
 	result.tmtw = result.tot_mana_used + 20*result.dmg_taken / (.5*my_maxhp());	
 
 	return result;
 }
-float attack_eval(combat_skill spell)
+skdmg attack_eval(combat_skill spell)
 {
 	return attack_eval(spell,last_monster());
 }
-float attack_eval(skill spell, monster mon)
+skdmg attack_eval(skill spell, monster mon)
 {
 	return attack_eval(cmbt_skills[spell],mon);
 }
-float attack_eval(skill spell)
+skdmg attack_eval(skill spell)
 {
 	return attack_eval(cmbt_skills[spell],last_monster());
 }
@@ -1130,6 +1132,7 @@ float attack_eval(skill spell)
 			skdmg myskdmg = attack_eval(sk,mon);
 			skillranks[skillranks.count()] = myskdmg;
 		}
+		/*
 		foreach num in skillranks
 		{
 			if(skillranks[num].ttd > 15)
@@ -1137,6 +1140,7 @@ float attack_eval(skill spell)
 				remove skillranks[num];
 			}
 		}
+		*/
 		sort skillranks by value.tmtw;
 		return skillranks;
 	}
@@ -1171,7 +1175,7 @@ float attack_eval(skill spell)
 		skdmg [int] bs = best_skills(sktype,mon, have_only);
 		foreach num in bs
 		{
-			print_html("%s has damage %s, ttd %s, mana used %s, dmg_taken %s",string [int] {to_string(bs[num].sk),to_string(bs[num].dmg),to_string(bs[num].ttd),to_string(bs[num].tmtw),to_string(bs[num].dmg_taken)});
+			print_html("%s has damage %s, %s hit chance, ttd %s, mana used %s, dmg_taken %s",string [int] {to_string(bs[num].sk),to_string(bs[num].dmg),to_string(bs[num].hitchance),to_string(bs[num].ttd),to_string(bs[num].tmtw),to_string(bs[num].dmg_taken)});
 		}
 	}
 	void print_best_skills(string sktype,boolean have_only)
