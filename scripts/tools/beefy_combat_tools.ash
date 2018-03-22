@@ -1040,7 +1040,7 @@ skdmg attack_eval(combat_skill csk, monster mon)
 	//print(csk.sk.to_string());
 	foreach el in csk.damage
 	{
-		float damage = dmg_eval(csk, el, mon);
+		float damage = dmg_eval(csk, el, mon, false);
 		if(csk.props["best"] == true)
 		{
 			
@@ -1054,7 +1054,7 @@ skdmg attack_eval(combat_skill csk, monster mon)
 	}
 	foreach el in csk.dot
 	{
-		float damage = dmg_eval(csk, el, mon);
+		float damage = dmg_eval(csk, el, mon, true);
 		if(csk.props["best"] == true)
 		{
 			
