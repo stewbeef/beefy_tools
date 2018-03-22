@@ -822,19 +822,19 @@ float dmg_eval(string expr, float[string] vars)
 				m.append_replacement(b, numeric_modifier("Spell Damage").to_string());
 			break;
 			case "COLD_SPELL_DMG":
-				m.append_replacement(b, numeric_modifier("Cold Damage").to_string());
+				m.append_replacement(b, numeric_modifier("Cold Spell Damage").to_string());
 			break;
 			case "HOT_SPELL_DMG":
-				m.append_replacement(b, numeric_modifier("Hot Damage").to_string());
+				m.append_replacement(b, numeric_modifier("Hot Spell Damage").to_string());
 			break;
 			case "SLEAZE_SPELL_DMG":
-				m.append_replacement(b, numeric_modifier("Sleaze Damage").to_string());
+				m.append_replacement(b, numeric_modifier("Sleaze Spell Damage").to_string());
 			break;
 			case "SPOOKY_SPELL_DMG":
-				m.append_replacement(b, numeric_modifier("Spooky Damage").to_string());
+				m.append_replacement(b, numeric_modifier("Spooky Spell Damage").to_string());
 			break;
 			case "STENCH_SPELL_DMG":
-				m.append_replacement(b, numeric_modifier("Stench Damage").to_string());
+				m.append_replacement(b, numeric_modifier("Stench Spell Damage").to_string());
 			break;
 			case "BONUS_WEAPON_DAMAGE":
 				if(weapon_type(equipped_item($slot[weapon])) == $stat[moxie])
@@ -920,24 +920,20 @@ float dmg_eval(string expr, float[string] vars)
 	return modifier_eval(b.to_string());
 }
 
-float dmg_eval(combat_skill spell, element el, monster mon, boolean dot)
+float dmg_eval(combat_skill csk, element el, monster mon, boolean dot)
 {
-	//print (spell.sk.to_string());
-	/*
-	string capped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*min((class(Pastamancer)*skill(Bringing Up the Rear)*PASTA+1)*CAP,(base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
-	string uncapped_spell_dmg = "ceil(min(MON_GROUP,SPELL_GROUP)*EL_MULT*(1+SPELL_MULT)*((base+floor(MYS*MYST_SCALING))*(1+SPELL_CRIT)+BONUS_SPELL_DAMAGE+BONUS_ELEMENTAL_DAMAGE+SAUCE*min(L,10)*skill(Intrinsic Spiciness)))";
-	*/
+	//print (csk.sk.to_string());
+
 	float [string] vars;
-	foreach var in spell.dmg_props
+	foreach var in csk.dmg_props
 	{
-		vars[var] = spell.dmg_props[var];
+		vars[var] = csk.dmg_props[var];
 	}
 	vars["MON_GROUP"] = 1; // to replace
 	vars["MONDEF"] = mon.monster_defense();
 	switch(el)
 	{
 		case $element[hot]:
-			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("hot spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[hot]:
@@ -953,7 +949,6 @@ float dmg_eval(combat_skill spell, element el, monster mon, boolean dot)
 			}
 		break;
 		case $element[cold]:
-			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("cold spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[cold]:
@@ -969,7 +964,6 @@ float dmg_eval(combat_skill spell, element el, monster mon, boolean dot)
 			}
 		break;
 		case $element[sleaze]:
-			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("sleaze spell damage");
 			switch(mon.monster_element())
 			{
 				case $element
@@ -986,7 +980,6 @@ float dmg_eval(combat_skill spell, element el, monster mon, boolean dot)
 			}
 		break;
 		case $element[spooky]:
-			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("spooky spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[cold]:
@@ -1002,7 +995,6 @@ float dmg_eval(combat_skill spell, element el, monster mon, boolean dot)
 			}
 		break;
 		case $element[stench]:
-			vars["BONUS_ELEMENTAL_DAMAGE"] = numeric_modifier("stench spell damage");
 			switch(mon.monster_element())
 			{
 				case $element[hot]:
@@ -1026,20 +1018,20 @@ float dmg_eval(combat_skill spell, element el, monster mon, boolean dot)
 	float damage;
 	if(dot)
 	{
-		dmg_eval(spell.dot[el], vars);
+		dmg_eval(csk.dot[el], vars);
 	}
 	else
 	{
-		dmg_eval(spell.damage[el], vars);
+		dmg_eval(csk.damage[el], vars);
 	}
 	return damage;
 }
 float hit_eval(combat_skill csk, monster mon)
 {
 	float [string] vars;
-	foreach var in spell.dmg_props
+	foreach var in csk.dmg_props
 	{
-		vars[var] = spell.dmg_props[var];
+		vars[var] = csk.dmg_props[var];
 	}
 	vars["MON_GROUP"] = 1; // to replace
 	vars["MONDEF"] = mon.monster_defense();
