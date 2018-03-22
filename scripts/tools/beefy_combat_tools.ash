@@ -9,7 +9,7 @@ string get_hitchance(string statmod)
 	buffer hitchance;
 
 	hitchance.append("min(1,max(AUTOHIT,(6+WEAPON_STAT");
-	if(statbonus != "")
+	if(statmod != "")
 	{
 		hitchance.append(statmod);
 	}
