@@ -382,17 +382,21 @@ string min(string a, string b)
 		string [string]  {
 			"mon_defense" : "-5*WARSNAP-11*GRANDWARSNAP-19*GLORWARSNAP",
 			"mon_attack" : "-5*SHEWHOWAS-11*GRANDSHEWHOWAS-19*GLORSHEWHOWAS"
+			}
 		);
 
 	cmbt_skills[to_skill("Spirit Snap")] = new combat_skill(
 		to_skill("Spirit Snap"),
 		string [element] {
 			$element[none] : ".10*MUS*NOTTBLESS+.3*WARSNAP*MUS+.4*GRANDWARSNAP*MUS+.5*GLORWARSNAP*MUS",
-			$element[spooky] : ".25*SHEWHOWAS*MUS+.3*GRANDSHEWHOWAS*MUS+.35*GLORSHEWHOWAS*MUS"},
+			$element[spooky] : ".25*SHEWHOWAS*MUS+.3*GRANDSHEWHOWAS*MUS+.35*GLORSHEWHOWAS*MUS"
+			},
 		float [string] {},
 		boolean [string] {"once" : true},
 		"1",
-		string [element]  {$element[none] : ".15*STORMTORT*MUS+.2*GRANDSTORMTORT*MUS+.25*GLORSTORMTORT*MUS"},
+		string [element]  {
+			$element[none] : ".15*STORMTORT*MUS+.2*GRANDSTORMTORT*MUS+.25*GLORSTORMTORT*MUS"
+			},
 		);
 
 	cmbt_skills[to_skill("Shieldbutt")] = new combat_skill(
@@ -407,8 +411,13 @@ string min(string a, string b)
 		float [string] {},
 		boolean [string] {"attack" : true},
 		max("class(Turtle Tamer)",hitchance),
-		string [element]  {$element[none] : "((1+skill(butts of steel))*SHIELD_POWER*.15+5*GRANDSTORMTORT+10*GLORSTORMTORT+" + attack_non_ele_dmg + ")"},
-		string [string] {"hp" : "7*SHEWHOWAS+11*GRANDSHEWHOWAS+19*GLORSHEWHOWAS", "stagger" : ".5*ANYWARSNAP"}
+		string [element]  {
+			$element[none] : "((1+skill(butts of steel))*SHIELD_POWER*.15+5*GRANDSTORMTORT+10*GLORSTORMTORT+" + attack_non_ele_dmg + ")"
+			},
+		string [string] {
+			"hp" : "7*SHEWHOWAS+11*GRANDSHEWHOWAS+19*GLORSHEWHOWAS",
+			"stagger" : ".5*ANYWARSNAP"
+			}
 		);
 //Disco Attacks
 
@@ -422,6 +431,7 @@ string min(string a, string b)
 		string [string]  {
 			"mon_defense" : "-1",
 			"mon_attack" : "-1"
+			}
 		);
 	cmbt_skills[to_skill("Clobber")] = new combat_skill(
 		to_skill("Clobber"),
