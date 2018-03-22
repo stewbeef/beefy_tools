@@ -1061,7 +1061,7 @@ skdmg attack_eval(combat_skill csk, monster mon)
 	result.dothitdmg = result.hitchance * result.dotdmg;
 	result.sk = csk.sk;
 	result.cmbtsk = csk;
-	result.ttd = ceil(mon.monster_hp()/ max(1,result.dmg));
+	result.ttd = ceil(mon.monster_hp()/ max(1,result.hitdmg));
 	result.dmg_taken = mon.expected_damage() * result.ttd;
 	result.tot_mana_used = result.ttd * mp_cost(sk);
 	result.tmtw = result.tot_mana_used + 20*result.dmg_taken / (.5*my_maxhp());	
