@@ -1036,7 +1036,7 @@ float hit_eval(combat_skill csk, monster mon)
 	vars["MON_GROUP"] = 1; // to replace
 	vars["MONDEF"] = mon.monster_defense();
 
-	float dmg_eval(csk.hitchance, vars);
+	return dmg_eval(csk.hitchance, vars);
 }
 
 skdmg attack_eval(combat_skill csk, monster mon)
