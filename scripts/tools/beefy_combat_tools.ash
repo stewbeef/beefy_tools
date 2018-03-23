@@ -160,6 +160,11 @@ string get_min(string a, string b)
 		float dothitdmg; //damage * hitchance
 		float [element] eldotdmg; //dot per element inflicted per use
 
+		int attack_delevel;
+		int defense_delevel;
+		int attack_dlot;
+		int defense_dlot;
+		
 		int ttd; // turns to death
 		int tot_mana_used;
 		int tmtw; //total mana to win
@@ -490,9 +495,133 @@ element PM_Element()
 }
 
 //////////////////////////////////
+//Monsters
+
+record monster_status
+{
+	monster me;
+	boolean simulation;
+	int hp;
+	int attack;
+	int defense;
+	int damage;
+	skdmg [skill] dots;
+};
+
+monster_status init(monster_status mon)
+{
+	if(!mon.simulation)
+	{
+		mon.hp = monster_hp();
+		mon.attack = monster_attack();
+		mon.defense = monster_defense();
+		mon.damage = expected_damage();
+	}
+	else
+	{
+		mon.hp = mon.me.monster_hp();
+		mon.attack = mon.me.monster_attack();
+		mon.defense = mon.me.monster_defense();
+		mon.damage = mon.me.expected_damage();
+	}
+	return mon;
+
+}
+monster_status mon_init(monster mon, boolean simulate)
+{
+	monster_status newms = new monster_status(mon, simulate);
+
+	return newms.init();
+}
+
+monster_status apply_skill(monster_status mon, skdmg skd)
+{
+	if(skd.dothitdmg != 0 || skd.attack_dlot != 0 || skd.defense_dlot != 0)
+	{
+		mon.dots[skd.sk] = skd;
+	}
+	mon.hp = mon.hp - skd.dothitdmg;
+	mon.defense = mon.defense - skd.defense_dlot;
+	mon.attack = mon.attack - skd.attack_dlot;
+
+	mon.hp = mon.hp - skd.hitdmg;
+	mon.defense = mon.defense - skd.defense_delevel;
+	mon.attack = mon.attack - skd.attack_delevel;
+
+	return mon;
+}
+
+monster_status next_turn(monster_status mon)
+{
+	foreach sk in mon.dots
+	{
+		mon.hp = mon.hp - mon.dots[sk].dothitdmg;
+		mon.defense = mon.defense - mon.dots[sk].defense_dlot;
+		mon.attack = mon.attack - mon.dots[sk].attack_dlot;
+	}
+
+	return mon;
+}
+
+boolean is_dead(monster_status mon)
+{
+	if(mon.hp <= 0)
+	{
+		return true;
+	}
+	return false;
+}
+
+int attack(monster_status mon)
+{
+	if(!mon.simulation)
+	{
+		return monster_attack();
+	}
+	return mon.attack;
+}
+
+int defense(monster_status mon)
+{
+	if(!mon.simulation)
+	{
+		return monster_defense();
+	}
+	return mon.defense;
+}
+
+int hp(monster_status mon)
+{
+	if(!mon.simulation)
+	{
+		return monster_hp();
+	}
+	return mon.hp;
+}
+
+int damage(monster_status mon)
+{
+	if(!mon.simulation)
+	{
+		return expected_damage();
+	}
+	return mon.damage;
+}
+
+string to_string(monster_status mon)
+{
+	return mon.me.to_string();
+}
+
+element monster_element(monster_status mon)
+{
+	return mon.me.monster_element();
+}
+
+//////////////////////////////////
 //Spell damage
 
-float dmg_eval(string expr, float[string] vars)
+float combat_eval(string expr, float[string] vars)
 {
 	//skill() 0 1
 	//effect() 0 1
@@ -920,7 +1049,7 @@ float dmg_eval(string expr, float[string] vars)
 	return modifier_eval(b.to_string());
 }
 
-float dmg_eval(combat_skill csk, element el, monster mon, boolean dot)
+float dmg_eval(combat_skill csk, element el, monster_status mon, boolean dot)
 {
 	//print (csk.sk.to_string());
 
@@ -930,7 +1059,8 @@ float dmg_eval(combat_skill csk, element el, monster mon, boolean dot)
 		vars[var] = csk.dmg_props[var];
 	}
 	vars["MON_GROUP"] = 1; // to replace
-	vars["MONDEF"] = mon.monster_defense();
+	vars["MONDEF"] = mon.defense();
+	vars["MONATK"] = mon.attack();
 	switch(el)
 	{
 		case $element[hot]:
@@ -1018,15 +1148,16 @@ float dmg_eval(combat_skill csk, element el, monster mon, boolean dot)
 	float damage;
 	if(dot)
 	{
-		damage = dmg_eval(csk.dot[el], vars);
+		damage = combat_eval(csk.dot[el], vars);
 	}
 	else
 	{
-		damage = dmg_eval(csk.damage[el], vars);
+		damage = combat_eval(csk.damage[el], vars);
 	}
 	return damage;
 }
-float hit_eval(combat_skill csk, monster mon)
+
+float hit_eval(combat_skill csk, monster_status mon)
 {
 	float [string] vars;
 	foreach var in csk.dmg_props
@@ -1034,12 +1165,13 @@ float hit_eval(combat_skill csk, monster mon)
 		vars[var] = csk.dmg_props[var];
 	}
 	vars["MON_GROUP"] = 1; // to replace
-	vars["MONDEF"] = mon.monster_defense();
+	vars["MONDEF"] = mon.defense();
+	vars["MONATK"] = mon.attack();
 
-	return dmg_eval(csk.hitchance, vars);
+	return combat_eval(csk.hitchance, vars);
 }
 
-skdmg attack_eval(combat_skill csk, monster mon)
+skdmg attack_eval(combat_skill csk, monster_status mon)
 {
 	skdmg result = new skdmg();
 	//print(csk.sk.to_string());
@@ -1061,6 +1193,7 @@ skdmg attack_eval(combat_skill csk, monster mon)
 	foreach el in csk.dot
 	{
 		float damage = dmg_eval(csk, el, mon, true);
+
 		if(csk.props["best"] == true)
 		{
 			
@@ -1079,29 +1212,23 @@ skdmg attack_eval(combat_skill csk, monster mon)
 	result.dothitdmg = result.hitchance * result.dotdmg;
 	result.sk = csk.sk;
 	result.cmbtsk = csk;
-	result.ttd = ceil(mon.monster_hp() / max(1,result.hitdmg));
-	result.dmg_taken = mon.expected_damage() * result.ttd;
+
+	result.ttd = ceil(mon.hp() / max(1,result.hitdmg));
+	result.dmg_taken = mon.damage() * result.ttd;
 	result.tot_mana_used = result.ttd * mp_cost(result.sk);
 	result.tmtw = result.tot_mana_used + 20*result.dmg_taken / (.5*my_maxhp());	
 
 	return result;
 }
-skdmg attack_eval(combat_skill spell)
+skdmg attack_eval(skill sk, monster_status mon)
 {
-	return attack_eval(spell,last_monster());
+	return attack_eval(cmbt_skills[sk], mon);
 }
-skdmg attack_eval(skill spell, monster mon)
-{
-	return attack_eval(cmbt_skills[spell],mon);
-}
-skdmg attack_eval(skill spell)
-{
-	return attack_eval(cmbt_skills[spell],last_monster());
-}
+
 //////////////////////////////////
 //Skill Picking
 
-	skdmg [int] best_skills(string sktype,monster mon, boolean have_only)
+	skdmg [int] best_skills(string sktype,monster_status mon, boolean have_only)
 	{
 		float mp_regen = (numeric_modifier("mp regen min") + numeric_modifier("mp regen max"))/2;
 		boolean [skill] choices;
@@ -1144,32 +1271,17 @@ skdmg attack_eval(skill spell)
 		sort skillranks by value.tmtw;
 		return skillranks;
 	}
-	skdmg [int] best_skills(monster mon)
+	skdmg [int] best_skills(monster_status mon)
 	{
 		return best_skills("", mon, true);
 	}
-	skdmg [int] best_skills(string sktype, monster mon)
+	skdmg [int] best_skills(string sktype, monster_status mon)
 	{
 		return best_skills(sktype, mon, true);
 	}
-	skdmg [int] best_skills(boolean have_only)
-	{
-		return best_skills("",last_monster(), have_only);
-	}
-	skdmg [int] best_skills(string sktype, boolean have_only)
-	{
-		return best_skills(sktype, last_monster(), have_only);
-	}
-	skdmg [int] best_skills()
-	{
-		return best_skills("",last_monster(), true);
-	}
-	skdmg [int] best_skills(string sktype)
-	{
-		return best_skills(sktype, last_monster(), true);
-	}
 
-	void print_best_skills(string sktype, monster mon, boolean have_only)
+
+	void print_best_skills(string sktype, monster_status mon, boolean have_only)
 	{
 		print("monster is: " +  mon.to_string());
 		skdmg [int] bs = best_skills(sktype,mon, have_only);
@@ -1178,29 +1290,14 @@ skdmg attack_eval(skill spell)
 			print_html("%s has damage %s, %s hit chance, ttd %s, mana used %s, dmg_taken %s",string [int] {to_string(bs[num].sk),to_string(bs[num].dmg),to_string(bs[num].hitchance),to_string(bs[num].ttd),to_string(bs[num].tmtw),to_string(bs[num].dmg_taken)});
 		}
 	}
-	void print_best_skills(string sktype,boolean have_only)
+
+	void print_best_skills(string sktype, monster_status mon)
 	{
-		print_best_skills(sktype,last_monster(), have_only);
+		print_best_skills(sktype, mon, true);
 	}
-	void print_best_skills(boolean have_only)
-	{
-		print_best_skills("",last_monster(), have_only);
-	}
-	void print_best_skills(string sktype, monster mon)
-	{
-		print_best_skills(sktype,mon, true);
-	}
-	void print_best_skills(monster mon)
+	void print_best_skills(monster_status mon)
 	{
 		print_best_skills("",mon, true);
-	}
-	void print_best_skills(string sktype)
-	{
-		print_best_skills(sktype,last_monster(), true);
-	}
-	void print_best_skills()
-	{
-		print_best_skills("",last_monster(), true);
 	}
 
 void beefy_combat_tools_parse(string command)
@@ -1212,20 +1309,20 @@ void beefy_combat_tools_parse(string command)
 			switch(arry.count())
 			{
 				case 1:
-					print_best_skills("spell",false);
+					print_best_skills("spell",mon_init(last_monster(),false),false);
 				break;
 				case 2:
-					print_best_skills("spell",arry[1].to_monster(),false);
+					print_best_skills("spell",mon_init(arry[1].to_monster(),true),false);
 				break;
 			}
 		case "spell":
 			switch(arry.count())
 			{
 				case 1:
-					print_best_skills("spell");
+					print_best_skills("spell", mon_init(last_monster(),false), true);
 				break;
 				case 2:
-					print_best_skills("spell",arry[1].to_monster());
+					print_best_skills("spell",mon_init(arry[1].to_monster(),true), true);
 				break;
 			}
 		break;
@@ -1233,10 +1330,10 @@ void beefy_combat_tools_parse(string command)
 			switch(arry.count())
 			{
 				case 1:
-					print_best_skills("",false);
+					print_best_skills("", mon_init(last_monster(),false), false);
 				break;
 				case 2:
-					print_best_skills("",arry[1].to_monster(),false);
+					print_best_skills("",mon_init(arry[1].to_monster(),true),false);
 				break;
 			}
 		break;
@@ -1244,10 +1341,10 @@ void beefy_combat_tools_parse(string command)
 			switch(arry.count())
 			{
 				case 1:
-					print_best_skills("");
+					print_best_skills("", mon_init(last_monster(),false), true);
 				break;
 				case 2:
-					print_best_skills("",arry[1].to_monster());
+					print_best_skills("",mon_init(arry[1].to_monster(),true), true);
 				break;
 			}
 		break;
@@ -1255,10 +1352,10 @@ void beefy_combat_tools_parse(string command)
 			switch(arry.count())
 			{
 				case 1:
-					print_best_skills("attack");
+					print_best_skills("attack", mon_init(last_monster(),false), true);
 				break;
 				case 2:
-					print_best_skills("attack",arry[1].to_monster());
+					print_best_skills("attack",mon_init(arry[1].to_monster(),true), true);
 				break;
 			}
 		break;
@@ -1266,10 +1363,10 @@ void beefy_combat_tools_parse(string command)
 			switch(arry.count())
 			{
 				case 1:
-					print_best_skills("attack",false);
+					print_best_skills("attack",mon_init(last_monster(),false), false);
 				break;
 				case 2:
-					print_best_skills("attack",arry[1].to_monster(),false);
+					print_best_skills("attack",mon_init(arry[1].to_monster(),true),false);
 				break;
 			}
 		break;
