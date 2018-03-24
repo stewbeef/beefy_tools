@@ -516,7 +516,23 @@ skdmg _attack_eval(monster_status mon, combat_skill csk, float [string] vars)
 	result.ttd = ceil(mon.hp() / max(1,result.hitdmg));
 	result.dmg_taken = mon.damage() * result.ttd;
 	result.tot_mana_used = result.ttd * mp_cost(result.sk);
-	result.tmtw = result.tot_mana_used + 20*result.dmg_taken / (.5*my_maxhp());	
+	if(result.dmg_taken > my_maxhp())
+	{
+		result.tmtw = 10*(result.tot_mana_used + 20*result.dmg_taken / (.5*my_maxhp()));	
+	}
+	else if(result.dmg_taken > .8*my_maxhp())
+	{
+		result.tmtw = 5*(result.tot_mana_used + 20*result.dmg_taken / (.5*my_maxhp()));
+	}
+	else if(result.dmg_taken > .6*my_maxhp())
+	{
+		result.tmtw = 2*(result.tot_mana_used + 20*result.dmg_taken / (.5*my_maxhp()));
+	}
+	else
+	{
+		result.tmtw = result.tot_mana_used + 20*result.dmg_taken / (.5*my_maxhp());	
+	}
+	
 
 	return result;
 }
